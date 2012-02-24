@@ -24,3 +24,8 @@ cscope.*
 index
 target
 *.pyc
+*/bin/
+*/*/bin/
+sensei-gateways/src/main/resources/
+sensei-war/src/main/resources/
+
