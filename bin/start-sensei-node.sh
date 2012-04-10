@@ -24,7 +24,8 @@ esac
 lib=$bin/../sensei-core/target/lib
 dist=$bin/../sensei-core/target
 resources=$bin/../resources
-logs=$bin/../logs
+#logs=$bin/../logs
+logs=$1/logs
 
 if [[ ! -d $logs ]]; then
   echo "Log file does not exists, creating one..."
@@ -36,17 +37,17 @@ HEAP_OPTS="-Xmx1g -Xms1g -XX:NewSize=256m"
 # HEAP_OPTS="-Xmx1024m -Xms512m -XX:NewSize=128m"
 # HEAP_OPTS="-Xmx512m -Xms256m -XX:NewSize=64m"
 # GC_OPTS="-verbosegc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintGCDateStamps -XX:+UseConcMarkSweepGC -XX:+UseParNewGC"
-#JAVA_DEBUG="-Xdebug -Xrunjdwp:transport=dt_socket,address=1044,server=y,suspend=n"
+JAVA_DEBUG="-Xdebug -Xrunjdwp:transport=dt_socket,address=1044,server=y,suspend=n"
 #GC_OPTS="-XX:+UseConcMarkSweepGC -XX:+UseParNewGC"
 JAVA_OPTS="-server -d64"
-JMX_OPTS="-Djava.rmi.server.hostname=$IP -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=18889 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
+#JMX_OPTS="-Djava.rmi.server.hostname=$IP -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=18889 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
 
 MAIN_CLASS="com.senseidb.search.node.SenseiServer"
 
 
 CLASSPATH=$resources/:$lib/*:$dist/*:$1/ext/*
 
-PIDFILE=/tmp/sensei-search-node.pid
+PIDFILE=$1/logs/sensei-search-node.pid
 
 if [ -f $PIDFILE ]; then
   echo "File $PIDFILE exists shutdown may not be proper"
