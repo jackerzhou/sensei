@@ -21,7 +21,6 @@ public class CustomFilterConstructor extends FilterConstructor
   
 //  custom
 //  params type, valid values are: "int","string","boolean","long","bytes","double"
-//
 //  "custom" : {
 //    "class" : "com.sensidb.query.TestFilter"
 // 	  "params": [long, string]
