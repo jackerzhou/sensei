@@ -1,8 +1,10 @@
+
 package com.senseidb.search.query;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.BooleanClause;
@@ -18,6 +20,9 @@ import org.json.JSONObject;
 public class QueryStringQueryConstructor extends QueryConstructor {
 
   public static final String QUERY_TYPE = "query_string";
+  
+  // different analyzer from write index for query 
+  public static final String ANALYZER_PARAM = "analyzer";
 
   private QueryParser _qparser;
 
@@ -29,6 +34,17 @@ public class QueryStringQueryConstructor extends QueryConstructor {
   @Override
   protected Query doConstructQuery(JSONObject jsonQuery) throws JSONException
   {
+	String analyzerClassName = jsonQuery.optString(ANALYZER_PARAM, null);
+	Analyzer analyzer = null;
+	if(analyzerClassName != null) {
+		try {
+			Class analyzerClass = Class.forName(analyzerClassName);
+			analyzer = (Analyzer)analyzerClass.newInstance();
+		} catch (Throwable t) {
+			throw new IllegalArgumentException(t.getMessage());
+		}
+	}
+	
     String queryText = jsonQuery.optString(QUERY_PARAM, null);
     if (queryText == null || queryText.length() == 0)
     {
@@ -82,7 +98,12 @@ public class QueryStringQueryConstructor extends QueryConstructor {
 
         for (String field : fields)
         {
-          QueryParser qparser = new QueryParser(Version.LUCENE_CURRENT, field, _qparser.getAnalyzer());
+          QueryParser qparser = null;
+          if(analyzer == null) {
+        	  qparser = new QueryParser(Version.LUCENE_CURRENT, field, _qparser.getAnalyzer());
+          } else {
+        	  qparser = new QueryParser(Version.LUCENE_CURRENT, field, analyzer);
+          }
           qparser.setAllowLeadingWildcard(allow_leading_wildcard);
           qparser.setEnablePositionIncrements(enable_position_increments);
           qparser.setFuzzyMinSim(fuzzy_min_sim);

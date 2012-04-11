@@ -1,5 +1,6 @@
 package com.senseidb.search.node;
 
+import com.senseidb.svc.impl.CoreSenseiServiceImpl;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 
 import java.util.List;
@@ -22,7 +23,6 @@ import com.senseidb.indexing.DefaultJsonSchemaInterpreter;
 import com.senseidb.search.req.SenseiHit;
 import com.senseidb.search.req.SenseiRequest;
 import com.senseidb.search.req.SenseiResult;
-import com.senseidb.svc.impl.CoreSenseiServiceImpl;
 
 
 /**
@@ -38,10 +38,15 @@ public class SenseiBroker extends AbstractConsistentHashBroker<SenseiRequest, Se
   private long _timeoutMillis = TIMEOUT_MILLIS;
   private final SenseiLoadBalancerFactory _loadBalancerFactory;
 
-  public SenseiBroker(PartitionedNetworkClient<Integer> networkClient, ClusterClient clusterClient,
-                      SenseiLoadBalancerFactory loadBalancerFactory) throws NorbertException
+  public SenseiBroker(PartitionedNetworkClient<Integer> networkClient,
+                      ClusterClient clusterClient,
+                      SenseiLoadBalancerFactory loadBalancerFactory,
+                      int pollInterval,
+                      int minResponses,
+                      int maxTotalWait)
+    throws NorbertException
   {
-    super(networkClient, CoreSenseiServiceImpl.SERIALIZER);
+    super(networkClient, CoreSenseiServiceImpl.PROTO_SERIALIZER, pollInterval, minResponses, maxTotalWait);
     _loadBalancerFactory = loadBalancerFactory;
     clusterClient.addListener(this);
     logger.info("created broker instance " + networkClient + " " + clusterClient + " " + loadBalancerFactory);

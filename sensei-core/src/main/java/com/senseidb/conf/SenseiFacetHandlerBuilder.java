@@ -22,6 +22,7 @@ import com.browseengine.bobo.facets.FacetHandler.FacetDataNone;
 import com.browseengine.bobo.facets.FacetHandlerInitializerParam;
 import com.browseengine.bobo.facets.RuntimeFacetHandler;
 import com.browseengine.bobo.facets.RuntimeFacetHandlerFactory;
+import com.browseengine.bobo.facets.AbstractRuntimeFacetHandlerFactory;
 import com.browseengine.bobo.facets.attribute.AttributesFacetHandler;
 import com.browseengine.bobo.facets.data.PredefinedTermListFactory;
 import com.browseengine.bobo.facets.data.TermListFactory;
@@ -29,6 +30,7 @@ import com.browseengine.bobo.facets.impl.CompactMultiValueFacetHandler;
 import com.browseengine.bobo.facets.impl.DynamicTimeRangeFacetHandler;
 import com.browseengine.bobo.facets.impl.HistogramFacetHandler;
 import com.browseengine.bobo.facets.impl.MultiValueFacetHandler;
+import com.browseengine.bobo.facets.impl.MultiValueWithWeightFacetHandler;
 import com.browseengine.bobo.facets.impl.PathFacetHandler;
 import com.browseengine.bobo.facets.impl.RangeFacetHandler;
 import com.browseengine.bobo.facets.impl.SimpleFacetHandler;
@@ -127,6 +129,10 @@ public class SenseiFacetHandlerBuilder {
 
 	static MultiValueFacetHandler buildMultiHandler(String name,String fieldName,TermListFactory<?> termListFactory,Set<String> depends){
 		return new MultiValueFacetHandler(name, fieldName, termListFactory,null,depends);
+	}
+	
+	static MultiValueFacetHandler buildWeightedMultiHandler(String name,String fieldName,TermListFactory<?> termListFactory,Set<String> depends){
+	    return new MultiValueWithWeightFacetHandler(name, fieldName, termListFactory);
 	}
 
 	static PathFacetHandler buildPathHandler(String name,String fieldName, Map<String,List<String>> paramMap){
@@ -268,13 +274,19 @@ public class SenseiFacetHandlerBuilder {
 	                                                                                                    final T end,
 	                                                                                                    final T unit)
 	{
-	  return new RuntimeFacetHandlerFactory<FacetHandlerInitializerParam, RuntimeFacetHandler<FacetDataNone>>()
+	  return new AbstractRuntimeFacetHandlerFactory<FacetHandlerInitializerParam, RuntimeFacetHandler<FacetDataNone>>()
 	  {
 	    @Override
 	    public RuntimeFacetHandler<FacetDataNone> get(FacetHandlerInitializerParam params)
 	    {
 	      return new HistogramFacetHandler<T>(name, dataHandler, start, end, unit);
 	    };
+
+      @Override
+      public boolean isLoadLazily()
+      {
+        return true;
+      }
 
 	    @Override
 	    public String getName()
@@ -336,14 +348,13 @@ public class SenseiFacetHandlerBuilder {
 				String type = facet.getString("type");
 				String fieldName = facet.optString("column",name);
 				Set<String> dependSet = new HashSet<String>();
-				String depends= facet.optString("depends",null);
-				if (depends != null) {
-					for (String dep :depends.split("[,; ]")) {
-						dep = dep.trim();
-						if (!dep.equals("")) {
-							dependSet.add(dep);
-						}
-					}
+				JSONArray dependsArray = facet.optJSONArray("depends");
+				
+				if (dependsArray != null) {
+				  int depCount = dependsArray.length();
+				  for (int k=0;k<depCount;++k){
+				    dependSet.add(dependsArray.getString(k));
+				  }
 				}
 
         SenseiSystemInfo.SenseiFacetInfo facetInfo = new SenseiSystemInfo.SenseiFacetInfo(name);
@@ -377,11 +388,13 @@ public class SenseiFacetHandlerBuilder {
 					facetHandler = buildMultiHandler(name, fieldName,  termListFactoryMap.get(fieldName), dependSet);
 				} else if (type.equals("compact-multi")) {
 					facetHandler = buildCompactMultiHandler(name, fieldName, dependSet,  termListFactoryMap.get(fieldName));
+				} else if (type.equals("weighted-multi")) {
+				    facetHandler = buildWeightedMultiHandler(name, fieldName,  termListFactoryMap.get(fieldName), dependSet);
 				} else if (type.equals("multi-range")) {
-          facetHandler = new MultiRangeFacetHandler(name, fieldName, null,  termListFactoryMap.get(fieldName) , buildPredefinedRanges(paramMap));
-        } else if (type.equals("attribute")) {
-          facetHandler = new AttributesFacetHandler(name, fieldName,  termListFactoryMap.get(fieldName), null , facetProps);
-        } else if (type.equals("histogram")) {
+                    facetHandler = new MultiRangeFacetHandler(name, fieldName, null,  termListFactoryMap.get(fieldName) , buildPredefinedRanges(paramMap));
+                } else if (type.equals("attribute")) {
+                    facetHandler = new AttributesFacetHandler(name, fieldName,  termListFactoryMap.get(fieldName), null , facetProps);
+                } else if (type.equals("histogram")) {
 				  // A histogram facet handler is always dynamic
 				  RuntimeFacetHandlerFactory<?, ?> runtimeFacetFactory = getHistogramFacetHandlerFactory(facet, name, paramMap);
 				  runtimeFacets.add(runtimeFacetFactory);
@@ -436,7 +449,7 @@ public class SenseiFacetHandlerBuilder {
     final String depends = dependSet.iterator().next();
     Assert.notEmpty(paramMap.get("range"), "Facet handler " + name + " should have at least one predefined range");
 
-    return new RuntimeFacetHandlerFactory<FacetHandlerInitializerParam, RuntimeFacetHandler<?>>() {
+    return new AbstractRuntimeFacetHandlerFactory<FacetHandlerInitializerParam, RuntimeFacetHandler<?>>() {
 
       @Override
       public String getName() {

@@ -26,7 +26,6 @@ public class JsonDeserializer {
 
             CustomJsonHandler customJsonHandler = (CustomJsonHandler) ReflectionUtil.getAnnotation(cls, CustomJsonHandler.class);
             if (customJsonHandler != null && handleCustomJsonHandler) {
-                CustomJsonHandler annotation = cls.getAnnotation(CustomJsonHandler.class);
                 JsonHandler jsonHandler;
                try {
                   jsonHandler = customJsonHandler.value().newInstance();
@@ -56,7 +55,12 @@ public class JsonDeserializer {
                 else if (type == Boolean.class) {
                     value = jsonObject.optBoolean(name);
                 } else if (type == Long.class) {
-                    value = jsonObject.optLong(name);
+                  try {
+                    value = Long.parseLong(jsonObject.optString(name, "0"));
+                  }
+                  catch(Exception e) {
+                    value = 0L;
+                  }
                 } else if (type == String.class) {
                     value = jsonObject.optString(name);
                 } else if (type == Double.class) {

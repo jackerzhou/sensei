@@ -159,6 +159,21 @@ public class TestBQL extends TestCase
   }
 
   @Test
+  public void testGroupByOrColumns() throws Exception
+  {
+    System.out.println("testGroupByOrColumns");
+    System.out.println("==================================================");
+
+    JSONObject json = _compiler.compile(
+      "SELECT category " +
+      "FROM cars " +
+      "GROUP BY color OR category TOP 5"
+      );
+    JSONObject expected = new JSONObject("{\"groupBy\":{\"columns\":[\"color\",\"category\"],\"top\":5},\"meta\":{\"select_list\":[\"category\"]}}");
+    assertTrue(_comp.isEquals(json, expected));
+  }
+
+  @Test
   public void testEqualPredInteger() throws Exception
   {
     System.out.println("testEqualPredInteger");
@@ -923,8 +938,8 @@ public class TestBQL extends TestCase
       "WHERE time IN LAST 1 weeks 2 day 3 hours 4 mins 5 seconds 6 msecs"
       );
 
-    long timeStamp = json.getJSONArray("selections").getJSONObject(0)
-      .getJSONObject("range").getJSONObject("time").getLong("from");
+    long timeStamp = Long.parseLong(json.getJSONArray("selections").getJSONObject(0)
+      .getJSONObject("range").getJSONObject("time").getString("from"));
     long timeSpan = 1 * (7 * 24 * 60 * 60 * 1000L) +
                     2 * (24 * 60 * 60 * 1000L) +
                     3 * (60 * 60 * 1000L) +
@@ -952,8 +967,8 @@ public class TestBQL extends TestCase
       "WHERE time SINCE 2 days 3 hours 4 minutes 6 milliseconds AGO"
       );
 
-    long timeStamp = json.getJSONArray("selections").getJSONObject(0)
-      .getJSONObject("range").getJSONObject("time").getLong("from");
+    long timeStamp = Long.parseLong(json.getJSONArray("selections").getJSONObject(0)
+      .getJSONObject("range").getJSONObject("time").getString("from"));
     long timeSpan = 2 * (24 * 60 * 60 * 1000L) +
                     3 * (60 * 60 * 1000L) +
                     4 * (60 * 1000L) +
@@ -975,8 +990,8 @@ public class TestBQL extends TestCase
       "WHERE time BEFORE 3 hours 4 min AGO"
       );
 
-    long timeStamp = json.getJSONArray("selections").getJSONObject(0)
-      .getJSONObject("range").getJSONObject("time").getLong("to");
+    long timeStamp = Long.parseLong(json.getJSONArray("selections").getJSONObject(0)
+      .getJSONObject("range").getJSONObject("time").getString("to"));
     long timeSpan = 3 * (60 * 60 * 1000L) +
                     4 * (60 * 1000L);
     assertTrue(now - timeStamp - timeSpan < 2); // Should be less than 2 msecs
@@ -996,8 +1011,8 @@ public class TestBQL extends TestCase
       "WHERE time NOT BEFORE 3 hours 4 min AGO"
       );
 
-    long timeStamp = json.getJSONArray("selections").getJSONObject(0)
-      .getJSONObject("range").getJSONObject("time").getLong("from");
+    long timeStamp = Long.parseLong(json.getJSONArray("selections").getJSONObject(0)
+      .getJSONObject("range").getJSONObject("time").getString("from"));
     long timeSpan = 3 * (60 * 60 * 1000L) +
                     4 * (60 * 1000L);
     assertTrue(now - timeStamp - timeSpan < 2); // Should be less than 2 msecs
@@ -1017,8 +1032,8 @@ public class TestBQL extends TestCase
       "WHERE time < 2012-01-02 12:10:30"
       );
 
-    long timeStamp = json.getJSONArray("selections").getJSONObject(0)
-      .getJSONObject("range").getJSONObject("time").getLong("to");
+    long timeStamp = Long.parseLong(json.getJSONArray("selections").getJSONObject(0)
+      .getJSONObject("range").getJSONObject("time").getString("to"));
     long expected = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2012-01-02 12:10:30").getTime();
     assertEquals(timeStamp, expected);
   }
@@ -1037,8 +1052,8 @@ public class TestBQL extends TestCase
       "WHERE time < 2012-01-02"
       );
 
-    long timeStamp = json.getJSONArray("selections").getJSONObject(0)
-      .getJSONObject("range").getJSONObject("time").getLong("to");
+    long timeStamp = Long.parseLong(json.getJSONArray("selections").getJSONObject(0)
+      .getJSONObject("range").getJSONObject("time").getString("to"));
     long expected = new SimpleDateFormat("yyyy-MM-dd").parse("2012-01-02").getTime();
     assertEquals(timeStamp, expected);
   }
@@ -1069,12 +1084,12 @@ public class TestBQL extends TestCase
       }
     }
 
-    long fromTime = timeRange.getJSONObject("time").getLong("from");
+    long fromTime = Long.parseLong(timeRange.getJSONObject("time").getString("from"));
     long expectedFromTime = new SimpleDateFormat("yyyy-MM-dd").parse("2012-01-02").getTime();
     assertEquals(fromTime, expectedFromTime);
     assertFalse(timeRange.getJSONObject("time").getBoolean("include_lower"));
 
-    long toTime = timeRange.getJSONObject("time").getLong("from");
+    long toTime = Long.parseLong(timeRange.getJSONObject("time").getString("from"));
     long expectedToTime = new SimpleDateFormat("yyyy/MM/dd").parse("2012/01/31").getTime();
     assertEquals(fromTime, expectedFromTime);
     assertTrue(timeRange.getJSONObject("time").getBoolean("include_upper"));
@@ -1170,5 +1185,50 @@ public class TestBQL extends TestCase
     assertTrue(_comp.isEquals(json, expected));
   }
 
+  @Test
+  public void testRouteBy() throws Exception
+  {
+    System.out.println("testRouteBy");
+    System.out.println("==================================================");
+
+    JSONObject json = _compiler.compile(
+      "SELECT * " +
+      "FROM cars " +
+      "ROUTE BY '1234'"
+      );
+
+    JSONObject expected = new JSONObject("{\"routeParam\":\"1234\",\"meta\":{\"select_list\":[\"*\"]}}");
+    assertTrue(_comp.isEquals(json, expected));
+  }
+
+  @Test
+  public void testStringColumnName() throws Exception
+  {
+    System.out.println("testStringColumnName");
+    System.out.println("==================================================");
+
+    JSONObject json = _compiler.compile(
+      "SELECT 'color', year " +
+      "FROM cars "
+      );
+
+    JSONObject expected = new JSONObject("{\"meta\":{\"select_list\":[\"color\",\"year\"]}}");
+    assertTrue(_comp.isEquals(json, expected));
+  }
+
+  @Test
+  public void testSubColumnName() throws Exception
+  {
+    System.out.println("testSubColumnName");
+    System.out.println("==================================================");
+
+    JSONObject json = _compiler.compile(
+      "SELECT _srcdata.color, _srcdata.'$time' " +
+      "FROM cars "
+      );
+
+    JSONObject expected = new JSONObject("{\"fetchStored\":true,\"meta\":{\"select_list\":[\"_srcdata.color\",\"_srcdata.$time\"]}}");
+    assertTrue(_comp.isEquals(json, expected));
+  }
 
 }

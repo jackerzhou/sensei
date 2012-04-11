@@ -28,6 +28,7 @@ import javax.net.ssl.SSLHandshakeException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.HeaderElementIterator;
@@ -418,7 +419,7 @@ public class HttpRestSenseiServiceImpl implements SenseiService
 
     if (req.getGroupBy() != null)
     {
-      qparams.add(new BasicNameValuePair(SenseiSearchServletParams.PARAM_GROUP_BY, req.getGroupBy()));
+      qparams.add(new BasicNameValuePair(SenseiSearchServletParams.PARAM_GROUP_BY, StringUtils.join(req.getGroupBy(), ',')));
     }
 
     if (req.getMaxPerGroup() > 0)
@@ -755,7 +756,7 @@ public class HttpRestSenseiServiceImpl implements SenseiService
   {
     SenseiResult result = new SenseiResult();
 
-    result.setTid(jsonObj.getLong(SenseiSearchServletParams.PARAM_RESULT_TID));
+    result.setTid(Long.parseLong(jsonObj.getString(SenseiSearchServletParams.PARAM_RESULT_TID)));
     result.setTotalDocs(jsonObj.getInt(SenseiSearchServletParams.PARAM_RESULT_TOTALDOCS));
     result.setParsedQuery(jsonObj.getString(SenseiSearchServletParams.PARAM_RESULT_PARSEDQUERY));
     result.setNumHits(jsonObj.getInt(SenseiSearchServletParams.PARAM_RESULT_NUMHITS));
@@ -763,7 +764,7 @@ public class HttpRestSenseiServiceImpl implements SenseiService
     {
       result.setNumGroups(jsonObj.getInt(SenseiSearchServletParams.PARAM_RESULT_NUMGROUPS));
     }
-    result.setTime(jsonObj.getLong(SenseiSearchServletParams.PARAM_RESULT_TIME));
+    result.setTime(Long.parseLong(jsonObj.getString(SenseiSearchServletParams.PARAM_RESULT_TIME)));
     result.addAll(convertFacetMap(jsonObj.getJSONObject(SenseiSearchServletParams.PARAM_RESULT_FACETS)));
     result.setHits(convertHitsArray(jsonObj.getJSONArray(SenseiSearchServletParams.PARAM_RESULT_HITS)));
 
@@ -776,7 +777,7 @@ public class HttpRestSenseiServiceImpl implements SenseiService
     SenseiSystemInfo result = new SenseiSystemInfo();
 
     result.setNumDocs(jsonObj.getInt(SenseiSearchServletParams.PARAM_SYSINFO_NUMDOCS));
-    result.setLastModified(jsonObj.getLong(SenseiSearchServletParams.PARAM_SYSINFO_LASTMODIFIED));
+    result.setLastModified(Long.parseLong(jsonObj.getString(SenseiSearchServletParams.PARAM_SYSINFO_LASTMODIFIED)));
     result.setVersion(jsonObj.getString(SenseiSearchServletParams.PARAM_SYSINFO_VERSION));
     result.setFacetInfos(convertFacetInfos(jsonObj.getJSONArray(SenseiSearchServletParams.PARAM_SYSINFO_FACETS)));
     result.setClusterInfo(convertClusterInfo(jsonObj.getJSONArray(SenseiSearchServletParams.PARAM_SYSINFO_CLUSTERINFO)));
@@ -902,7 +903,7 @@ public class HttpRestSenseiServiceImpl implements SenseiService
       while(keys.hasNext()){
     	  String key = (String)keys.next();
     	  if (SenseiSearchServletParams.PARAM_RESULT_HIT_UID.equals(key)){
-    		  hit.setUID(hitObj.getLong(SenseiSearchServletParams.PARAM_RESULT_HIT_UID));
+    		  hit.setUID(Long.parseLong(hitObj.getString(SenseiSearchServletParams.PARAM_RESULT_HIT_UID)));
     	  }
     	  else if (SenseiSearchServletParams.PARAM_RESULT_HIT_DOCID.equals(key)){
     		  hit.setDocid(hitObj.getInt(SenseiSearchServletParams.PARAM_RESULT_HIT_DOCID));
@@ -915,6 +916,9 @@ public class HttpRestSenseiServiceImpl implements SenseiService
     	  }
     	  else if (SenseiSearchServletParams.PARAM_RESULT_HIT_STORED_FIELDS.equals(key)){
     		  hit.setStoredFields(convertStoredFields(hitObj.optJSONArray(SenseiSearchServletParams.PARAM_RESULT_HIT_STORED_FIELDS)));
+    	  }
+    	  else if (SenseiSearchServletParams.PARAM_RESULT_HIT_GROUPFIELD.equals(key)){
+    		  hit.setGroupValue(hitObj.getString(SenseiSearchServletParams.PARAM_RESULT_HIT_GROUPFIELD));
     	  }
     	  else if (SenseiSearchServletParams.PARAM_RESULT_HIT_GROUPVALUE.equals(key)){
     		  hit.setGroupValue(hitObj.getString(SenseiSearchServletParams.PARAM_RESULT_HIT_GROUPVALUE));
