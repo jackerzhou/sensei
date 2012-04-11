@@ -135,14 +135,16 @@ public class TextQuery extends FieldAware implements Query {
   private Operator operator;
   private Type type;
   private double boost;
+  private String analyzer;
 
-  public TextQuery(String field, String value, Operator operator, Type type, double boost) {
+  public TextQuery(String field, String value, Operator operator, Type type, double boost, String analyzer) {
     super();
     this.field = field;
     this.value = value;
     this.operator = operator;
     this.type = type;
     this.boost = boost;
+    this.analyzer = analyzer;
   }
 
   public static enum Type {
@@ -170,4 +172,7 @@ public class TextQuery extends FieldAware implements Query {
     return boost;
   }
 
+  public String getAnalyzer() {
+    return analyzer;
+  }
 }

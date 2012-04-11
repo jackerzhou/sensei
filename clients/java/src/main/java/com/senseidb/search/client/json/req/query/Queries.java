@@ -62,11 +62,14 @@ public class Queries {
         return new SpanTerm(field,  value,  boost);
     }
     public static TextQuery textQuery(String field, String text, Operator operator, Type type, double boost) {
-        return new TextQuery(field, text, operator, type, boost);
+        return new TextQuery(field, text, operator, type, boost, null);
     }
     public static TextQuery textQuery(String field, String text, Operator operator, double boost) {
-      return new TextQuery(field, text, operator, null, boost);
-  }
+      return new TextQuery(field, text, operator, null, boost, null);
+    }
+    public static TextQuery textQuery(String field, String text, Operator operator, double boost, String analyzer) {
+        return new TextQuery(field, text, operator, null, boost, analyzer);
+    }
     public static FilteredQuery filteredQuery(Query query, Filter filter, double boost) {
         return new FilteredQuery(query, filter, boost);
     }
