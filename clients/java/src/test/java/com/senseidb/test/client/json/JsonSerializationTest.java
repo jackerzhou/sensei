@@ -1,6 +1,9 @@
 package com.senseidb.test.client.json;
 
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
@@ -8,7 +11,11 @@ import org.junit.Test;
 import com.senseidb.search.client.json.JsonDeserializer;
 import com.senseidb.search.client.json.JsonSerializer;
 import com.senseidb.search.client.json.req.FacetInit;
+import com.senseidb.search.client.json.req.Operator;
 import com.senseidb.search.client.json.req.SenseiClientRequest;
+import com.senseidb.search.client.json.req.filter.Filters;
+import com.senseidb.search.client.json.req.query.Queries;
+import com.senseidb.search.client.json.req.query.Query;
 import com.senseidb.search.client.json.res.SenseiResult;
 
 public class JsonSerializationTest extends Assert {
@@ -56,5 +63,33 @@ public class JsonSerializationTest extends Assert {
         SenseiClientRequest senseiRequest =  Examples.queries(SenseiClientRequest.builder()).build();
        JSONObject json = (JSONObject) JsonSerializer.serialize(senseiRequest);
        System.out.println(json.toString(3));
+    }
+    
+    @Test
+    public void testTextQueriesWithAnalyzerSerialization() throws Exception {
+    	SenseiClientRequest.Builder builder = SenseiClientRequest.builder();
+    	List innerQueries = Arrays.asList(
+    			Queries.textQuery("name", "anything", Operator.or, 1.0, "org.apache.lucene.analysis.WhitespaceAnalyzer")
+    	);
+    	builder.query(Queries.bool(innerQueries, null, null, 2, 2.0, true));
+    	SenseiClientRequest senseiRequest =  builder.build();
+        JSONObject json = (JSONObject) JsonSerializer.serialize(senseiRequest);
+        assertTrue(json.toString().indexOf("analyzer") != 0);
+        System.out.println(json.toString());
+    }
+
+    @Test
+    public void testCustomFilterSerialization() throws Exception {
+    	SenseiClientRequest.Builder builder = SenseiClientRequest.builder();
+    	builder.filter(
+    			Filters.customFilter("org.apache.lucene.analysis.Filter", 
+    							     Arrays.asList("long"), 
+    							     Arrays.asList((Object)new Integer(100000)))
+    	);
+
+    	SenseiClientRequest senseiRequest =  builder.build();
+        JSONObject json = (JSONObject) JsonSerializer.serialize(senseiRequest);
+        assertTrue(json.toString().indexOf("custom") != 0);
+        System.out.println(json.toString());    	
     }
 }
