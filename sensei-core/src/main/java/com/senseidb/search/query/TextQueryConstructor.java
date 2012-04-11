@@ -26,11 +26,13 @@ public class TextQueryConstructor extends QueryConstructor
   private static final Logger logger = Logger.getLogger(TextQueryConstructor.class);
 
   public static final String QUERY_TYPE = "text";
+  public static final String ANALYZER_PARAM = "analyzer";
 
   // "text" : {
   //   "message" : "this is a test",   // field: "message", query: "this is a test"
   //   "operator" : "or",              // operator, possible values: "and", "or"
-  //   "type" : "phrase"               // query type, can be "phrase", "phrase_prefix"
+  //   "type" : "phrase",               // query type, can be "phrase", "phrase_prefix"
+  //   "analyzer" : "com.sensei.search.TestAnaylyzer" // different query analyzer from index writer
   // },
 
   private Analyzer _analyzer;
@@ -64,6 +66,19 @@ public class TextQueryConstructor extends QueryConstructor
     else
     {
       text = String.valueOf(obj);
+    }
+    
+    // override default analyzer for query 
+    if(json.has(ANALYZER_PARAM)) {
+	    String ac = json.getString(ANALYZER_PARAM);
+	    if (ac != null) {
+			try {
+			  Class analyzerClass = Class.forName(ac);
+			  _analyzer = (Analyzer) analyzerClass.newInstance();
+			} catch (Throwable t) {
+			  throw new IllegalArgumentException(t.getMessage());
+			}
+	    }
     }
 
     TokenStream tokenStream = _analyzer.tokenStream(field, new StringReader(text));

@@ -14,6 +14,12 @@
 		</exec>
 	</target>
 	
+	<target name="install" depends="init" description="--> build .jar and sources into local repo">
+		<exec executable="mvn">
+			<arg line="--no-snapshot-updates -Dmaven.test.skip=true install"/>
+		</exec>
+	</target>
+
 	<target name="deploy" depends="init" >
 		<exec executable="mvn">
 		  <arg line="deploy" />
