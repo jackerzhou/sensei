@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import com.senseidb.search.client.json.JsonDeserializer;
 import com.senseidb.search.client.json.JsonSerializer;
+import com.senseidb.search.client.json.SenseiServiceProxy;
 import com.senseidb.search.client.json.req.FacetInit;
 import com.senseidb.search.client.json.req.Operator;
 import com.senseidb.search.client.json.req.SenseiClientRequest;
@@ -104,5 +105,30 @@ public class JsonSerializationTest extends Assert {
         JSONObject json = (JSONObject) JsonSerializer.serialize(senseiRequest);
         assertTrue(json.toString().indexOf("custom") != 0);
         System.out.println(json.toString());    	
+    }
+    
+    @Test
+    public void testQuerySomething() throws Exception {
+    	SenseiServiceProxy ssp = new SenseiServiceProxy("localhost", 8100);
+    	SenseiClientRequest.Builder builder = SenseiClientRequest.builder();
+    	
+//    	List innerQueries = Arrays.asList(
+//    			Queries.textQuery("name", "anybody", Operator.or, 1.0, "org.apache.lucene.analysis.WhitespaceAnalyzer")
+//    	);
+    	List innerQueries = Arrays.asList(
+    			Queries.stringQueryBuilder().query("anybody").defaultField("name").analyzer("org.apache.lucene.analysis.WhitespaceAnalyzer").build()
+    	);    	
+    	builder.query(Queries.bool(innerQueries, null, null, 2, 2.0, true));
+
+    	builder.filter(
+    			Filters.customFilter("org.apache.lucene.analysis.Filter", 
+    							     Arrays.asList("long"), 
+    							     Arrays.asList((Object)new Long(100000)))
+    	);
+    	builder.fetchStored(true);
+    	SenseiClientRequest senseiRequest =  builder.build();
+
+    	SenseiResult result = ssp.sendSearchRequest(senseiRequest);
+    	System.out.println(result);
     }
 }
