@@ -77,7 +77,20 @@ public class JsonSerializationTest extends Assert {
         assertTrue(json.toString().indexOf("analyzer") != 0);
         System.out.println(json.toString());
     }
-
+    
+    @Test
+    public void testStringQueriesWithAnalyzerSerialization() throws Exception {
+    	SenseiClientRequest.Builder builder = SenseiClientRequest.builder();
+    	List innerQueries = Arrays.asList(
+    			Queries.stringQueryBuilder().query("anything").defaultField("anyfield").analyzer("org.apache.lucene.analysis.WhitespaceAnalyzer").build()
+    	);
+    	builder.query(Queries.bool(innerQueries, null, null, 2, 2.0, true));
+    	SenseiClientRequest senseiRequest =  builder.build();
+        JSONObject json = (JSONObject) JsonSerializer.serialize(senseiRequest);
+        assertTrue(json.toString().indexOf("analyzer") != 0);
+        System.out.println(json.toString());
+    }
+    
     @Test
     public void testCustomFilterSerialization() throws Exception {
     	SenseiClientRequest.Builder builder = SenseiClientRequest.builder();
