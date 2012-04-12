@@ -62,24 +62,23 @@ public class TextQueryConstructor extends QueryConstructor
       text = ((JSONObject)obj).getString(VALUE_PARAM);
       op   = ((JSONObject)obj).optString(OPERATOR_PARAM);
       type = ((JSONObject)obj).optString(TYPE_PARAM);
+      
+      // override default analyzer for query 
+      String ac = ((JSONObject)obj).optString(ANALYZER_PARAM);
+      if(ac != null) {
+		try {
+		  Class analyzerClass = Class.forName(ac);
+		  _analyzer = (Analyzer) analyzerClass.newInstance();
+		} catch (Throwable t) {
+		  throw new IllegalArgumentException(t.getMessage());
+		}
+      }
     }
     else
     {
       text = String.valueOf(obj);
     }
-    
-    // override default analyzer for query 
-    if(json.has(ANALYZER_PARAM)) {
-	    String ac = json.getString(ANALYZER_PARAM);
-	    if (ac != null) {
-			try {
-			  Class analyzerClass = Class.forName(ac);
-			  _analyzer = (Analyzer) analyzerClass.newInstance();
-			} catch (Throwable t) {
-			  throw new IllegalArgumentException(t.getMessage());
-			}
-	    }
-    }
+
 
     TokenStream tokenStream = _analyzer.tokenStream(field, new StringReader(text));
     TermAttribute termAttribute = tokenStream.getAttribute(TermAttribute.class);
