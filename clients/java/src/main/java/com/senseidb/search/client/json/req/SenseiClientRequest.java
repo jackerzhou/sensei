@@ -24,7 +24,7 @@ public class SenseiClientRequest {
   /*
    * private Paging paging;
    */
-  private Integer count;
+  private Integer size;
   private Integer from;
 
   /**
@@ -41,7 +41,7 @@ public class SenseiClientRequest {
    * initializing parameters that are needed by all runtime facet handlers
    */
   private Map<String, Map<String, FacetInit>> facetInit = new HashMap<String, Map<String, FacetInit>>();
-  private List<Sort> sorts = new ArrayList<Sort>();
+  private List<Map<String, String>> sort = new ArrayList<Map<String, String>>();
   private Map<String, Facet> facets = new HashMap<String, Facet>();
   /**
    * Flag indicating whether stored fields are to be fetched
@@ -85,8 +85,8 @@ public class SenseiClientRequest {
   public static class Builder {
     private SenseiClientRequest request = new SenseiClientRequest();
 
-    public Builder paging(int count, int offset) {
-      request.count = count;
+    public Builder paging(int size, int offset) {
+      request.size = size;
       request.from = offset;
       return this;
     }
@@ -151,7 +151,9 @@ public class SenseiClientRequest {
       if (sort == null) {
         throw new IllegalArgumentException("The sort should be not null");
       }
-      request.sorts.add(sort);
+      Map<String, String> map = new HashMap<String, String>();
+      map.put(sort.getField(), sort.getOrder().name());
+      request.sort.add(map);
       return this;
     }
 
@@ -193,7 +195,7 @@ public class SenseiClientRequest {
   }
 
   public Paging getPaging() {
-    return new Paging(count, from);
+    return new Paging(size, from);
   }
 
   public GroupBy getGroupBy() {
@@ -207,9 +209,9 @@ public class SenseiClientRequest {
   public Map<String, Map<String, FacetInit>> getFacetInit() {
     return facetInit;
   }
-
-  public List<Sort> getSorts() {
-    return sorts;
+  
+  public List<Map<String, String>> getSort(){
+	  return sort;
   }
 
   public Map<String, Facet> getFacets() {
@@ -236,8 +238,8 @@ public class SenseiClientRequest {
     return routeParam;
   }
 
-  public Integer getCount() {
-    return count;
+  public Integer getSize() {
+    return size;
   }
 
   public Integer getFrom() {
