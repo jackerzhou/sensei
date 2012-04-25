@@ -191,6 +191,8 @@ public class StringQuery implements Filter, Query {
   private Boolean useDisMax;
   @JsonField("tie_breaker")
   private Integer tieBreaker;
+  @JsonField("analyzer")
+  private String analyzer;
 
   public static Builder builder() {
     return new Builder();
@@ -261,6 +263,11 @@ public class StringQuery implements Filter, Query {
 
     public Builder tieBreaker(int tieBreaker) {
       query.tieBreaker = tieBreaker;
+      return this;
+    }
+
+    public Builder analyzer(String analyzer) {
+      query.analyzer = analyzer;
       return this;
     }
 
