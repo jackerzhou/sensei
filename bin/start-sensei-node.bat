@@ -21,7 +21,7 @@ SET JMX_OPTS=-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=
 SET MAIN_CLASS=com.senseidb.search.node.SenseiServer
 
 
-SET CLASSPATH=%resources%/;%lib%/*;%dist%/*;%1/ext/*
+SET CLASSPATH=%1/ext/;%resources%/;%lib%/*;%dist%/*;%1/ext/*
 echo "Starting the Sensei. Please make sure that the Zookeeper instance is up. Logs are in the logs directory"
 java %JAVA_OPTS% %JMX_OPTS% %HEAP_OPTS% %GC_OPTS% %JAVA_DEBUG% -classpath "%CLASSPATH%"  -Dlog.home=%logs% %MAIN_CLASS% %1 
 
