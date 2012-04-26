@@ -153,7 +153,7 @@ public class SenseiClientRequest {
       }
       Map<String, String> map = new HashMap<String, String>();
       map.put(sort.getField(), sort.getOrder().name());
-      request.sort.add(map);
+      request.sort.add(map);      
       return this;
     }
 
@@ -209,9 +209,8 @@ public class SenseiClientRequest {
   public Map<String, Map<String, FacetInit>> getFacetInit() {
     return facetInit;
   }
-  
   public List<Map<String, String>> getSort(){
-	  return sort;
+    return sort;
   }
 
   public Map<String, Facet> getFacets() {
