@@ -218,6 +218,7 @@ public class SenseiClientRequest {
   public Map<String, Map<String, FacetInit>> getFacetInit() {
     return facetInit;
   }
+
   public List<Object> getSort(){
     return sort;
   }
