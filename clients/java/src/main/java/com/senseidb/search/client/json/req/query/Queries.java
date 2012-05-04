@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.senseidb.search.client.json.req.Operator;
 import com.senseidb.search.client.json.req.Range;
+import com.senseidb.search.client.json.req.Relevance;
 import com.senseidb.search.client.json.req.Term;
 import com.senseidb.search.client.json.req.Terms;
 import com.senseidb.search.client.json.req.filter.Filter;
@@ -43,6 +44,9 @@ public class Queries {
     public static StringQuery stringQuery(String query) {
       return StringQuery.builder().query(query).build();
   }
+    public static StringQuery stringQuery(String query, Relevance relevance) {
+        return StringQuery.builder().query(query).relevance(relevance).build();
+    }
     public static com.senseidb.search.client.json.req.query.span.SpanFirst spanFirst(SpanTerm match, int end, double boost) {
         return new com.senseidb.search.client.json.req.query.span.SpanFirst(match,  end, boost);
     }
@@ -62,13 +66,16 @@ public class Queries {
         return new SpanTerm(field,  value,  boost);
     }
     public static TextQuery textQuery(String field, String text, Operator operator, Type type, double boost) {
-        return new TextQuery(field, text, operator, type, boost, null);
+        return new TextQuery(field, text, operator, type, boost, null, null);
     }
     public static TextQuery textQuery(String field, String text, Operator operator, double boost) {
-      return new TextQuery(field, text, operator, null, boost, null);
+      return new TextQuery(field, text, operator, null, boost, null, null);
     }
     public static TextQuery textQuery(String field, String text, Operator operator, double boost, String analyzer) {
-        return new TextQuery(field, text, operator, null, boost, analyzer);
+        return new TextQuery(field, text, operator, null, boost, analyzer, null);
+    }
+    public static TextQuery textQuery(String field, String text, Operator operator, double boost, String analyzer, Relevance relevance) {
+        return new TextQuery(field, text, operator, null, boost, analyzer, relevance);
     }
     public static FilteredQuery filteredQuery(Query query, Filter filter, double boost) {
         return new FilteredQuery(query, filter, boost);

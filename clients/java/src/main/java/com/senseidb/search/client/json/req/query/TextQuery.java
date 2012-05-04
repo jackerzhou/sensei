@@ -2,6 +2,7 @@ package com.senseidb.search.client.json.req.query;
 
 import com.senseidb.search.client.json.CustomJsonHandler;
 import com.senseidb.search.client.json.req.Operator;
+import com.senseidb.search.client.json.req.Relevance;
 
 /**
  * <p>
@@ -136,8 +137,9 @@ public class TextQuery extends FieldAware implements Query {
   private Type type;
   private double boost;
   private String analyzer;
-
-  public TextQuery(String field, String value, Operator operator, Type type, double boost, String analyzer) {
+  private Relevance relevance;
+  
+  public TextQuery(String field, String value, Operator operator, Type type, double boost, String analyzer, Relevance relevance) {
     super();
     this.field = field;
     this.value = value;
@@ -145,6 +147,7 @@ public class TextQuery extends FieldAware implements Query {
     this.type = type;
     this.boost = boost;
     this.analyzer = analyzer;
+    this.relevance = relevance;
   }
 
   public static enum Type {
@@ -174,5 +177,9 @@ public class TextQuery extends FieldAware implements Query {
 
   public String getAnalyzer() {
     return analyzer;
+  }
+
+  public Relevance getRelevance() {
+	return relevance;
   }
 }

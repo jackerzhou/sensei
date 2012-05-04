@@ -2,7 +2,9 @@ package com.senseidb.test.client.json;
 
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -13,6 +15,7 @@ import com.senseidb.search.client.json.JsonSerializer;
 import com.senseidb.search.client.json.SenseiServiceProxy;
 import com.senseidb.search.client.json.req.FacetInit;
 import com.senseidb.search.client.json.req.Operator;
+import com.senseidb.search.client.json.req.Relevance;
 import com.senseidb.search.client.json.req.SenseiClientRequest;
 import com.senseidb.search.client.json.req.filter.Filters;
 import com.senseidb.search.client.json.req.query.Queries;
@@ -131,4 +134,49 @@ public class JsonSerializationTest extends Assert {
     	SenseiResult result = ssp.sendSearchRequest(senseiRequest);
     	System.out.println(result);
     }
+    
+    @Test
+	public void testTextQueryWithRelevanceSerialization() throws Exception {
+		SenseiClientRequest.Builder builder = SenseiClientRequest.builder();
+		
+		Map<Integer, Float> mileageWeight = new HashMap<Integer,Float>();
+		mileageWeight.put(11400, 777.9f);
+		mileageWeight.put(11100, 10.2f);
+		
+		Map<Integer, String> yearcolor = new HashMap<Integer,String>();
+		yearcolor.put(1998, "red");
+		
+		Map<String, Float> colorweight = new HashMap<String,Float>();
+		colorweight.put("red", 335.5f);
+		
+		Map<String, String> categorycolor = new HashMap<String,String>();
+		categorycolor.put("compact", "red");
+		
+		Relevance relevance = Relevance
+				.builder()
+				.modelVariables("set_int", Arrays.asList("goodYear"))
+				.modelVariables("int", Arrays.asList("thisYear"))
+				.modelVariables("string", Arrays.asList("coolTag"))
+				.modelVariables("map_int_float", Arrays.asList("yearcolor"))
+				.modelVariables("map_string_float", Arrays.asList("colorweight"))
+				.modelVariables("map_string_string", Arrays.asList("categorycolor"))
+				.modelFacets("int", Arrays.asList("year", "mileage"))
+				.modelFacets("long", Arrays.asList("groupid"))
+				.modelFacets("string", Arrays.asList("color","category"))
+				.modelFacets("mstring", Arrays.asList("tags"))
+				.modelFunctionParams(Arrays.asList("_INNER_SCORE", "thisYear", "year","goodYear","mileageWeight","mileage","color", "yearcolor", "colorweight", "category", "categorycolor"))
+				.modelFunction("  if(tags.contains(coolTag)) return 999999f; if(categorycolor.containsKey(category) && categorycolor.get(category).equals(color))  return 10000f; if(colorweight.containsKey(color) ) return 200f + colorweight.getFloat(color); if(yearcolor.containsKey(year) && yearcolor.get(year).equals(color)) return 200f; if(mileageWeight.containsKey(mileage)) return 10000+mileageWeight.get(mileage); if(goodYear.contains(year)) return (float)Math.exp(2d);   if(year==thisYear) return 87f   ; return  _INNER_SCORE;")
+				.values("goodYear", Arrays.asList(1996, 1997))
+				.values("thisYear", 2001)
+				.values("mileageWeight", mileageWeight)
+				.values("yearcolor", yearcolor)
+				.values("categorycolor", categorycolor)
+				.values("coolTag", "cool")
+				.build();
+		
+		SenseiClientRequest senseiRequest = builder.query(Queries.stringQuery("", relevance)).paging(0, 6).build();
+		JSONObject json = (JSONObject) JsonSerializer.serialize(senseiRequest);
+        assertTrue(json.toString().indexOf("relevance") != 0);
+        System.out.println(json.toString(3));
+	}
 }

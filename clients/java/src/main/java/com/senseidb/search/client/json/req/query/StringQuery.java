@@ -6,6 +6,7 @@ import java.util.List;
 import com.senseidb.search.client.json.CustomJsonHandler;
 import com.senseidb.search.client.json.JsonField;
 import com.senseidb.search.client.json.req.Operator;
+import com.senseidb.search.client.json.req.Relevance;
 import com.senseidb.search.client.json.req.filter.Filter;
 
 /**
@@ -193,7 +194,9 @@ public class StringQuery implements Filter, Query {
   private Integer tieBreaker;
   @JsonField("analyzer")
   private String analyzer;
-
+  @JsonField("relevance")
+  private Relevance relevance;
+  
   public static Builder builder() {
     return new Builder();
   }
@@ -269,6 +272,11 @@ public class StringQuery implements Filter, Query {
     public Builder analyzer(String analyzer) {
       query.analyzer = analyzer;
       return this;
+    }
+    
+    public Builder relevance(Relevance relevance) {
+    	query.relevance = relevance;
+    	return this;
     }
 
     public Builder query(String queryParam) {
