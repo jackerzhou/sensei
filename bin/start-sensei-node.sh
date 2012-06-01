@@ -25,7 +25,8 @@ lib=$bin/../sensei-core/target/lib
 dist=$bin/../sensei-core/target
 resources=$bin/../resources
 #logs=$bin/../logs
-logs=$1/logs
+node=`echo $1 | awk -F'/' '{print $NF}'`
+logs=$1/../../logs/$node
 
 if [[ ! -d $logs ]]; then
   echo "Log file does not exists, creating one..."
@@ -47,7 +48,7 @@ MAIN_CLASS="com.senseidb.search.node.SenseiServer"
 
 CLASSPATH=$1/ext/:$resources/:$lib/*:$dist/*:$1/ext/*
 
-PIDFILE=$1/logs/sensei-search-node.pid
+PIDFILE=$logs/sensei-search-node.pid
 
 if [ -f $PIDFILE ]; then
   echo "File $PIDFILE exists shutdown may not be proper"

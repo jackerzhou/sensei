@@ -2,7 +2,8 @@
 
 #usage="Usage: kill.sh <conf-dir>"
 
-PIDFILE=$1/logs/sensei-search-node.pid
+node=`echo $1 | awk -F'/' '{print $NF}'`
+PIDFILE=$1/../../logs/$node/sensei-search-node.pid
 
 echo killing `cat $PIDFILE` and wait for it to die. could take a while
 kill `cat $PIDFILE`
