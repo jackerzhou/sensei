@@ -38,6 +38,11 @@ public class Sort {
         sort.field = "relevance";
         return sort;
     }
+    public static Sort byScore(){
+    	Sort sort = new Sort();
+    	sort.field = "_score";
+    	return sort;
+    }
     public static enum Order {
         desc, asc;
     }
