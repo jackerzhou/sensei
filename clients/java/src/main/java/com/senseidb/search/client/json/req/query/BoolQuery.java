@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.senseidb.search.client.json.CustomJsonHandler;
 import com.senseidb.search.client.json.JsonField;
+import com.senseidb.search.client.json.req.Relevance;
 
 /**
  * <p>
@@ -25,6 +26,7 @@ public class BoolQuery implements Query {
   Integer minimumNumberShouldMatch;
   double boost;
   Boolean disableCoord;
+  Relevance relevance;
 
   public BoolQuery(List<Query> must, List<Query> must_not, List<Query> should, Integer minimumNumberShouldMatch,
       double boost, Boolean disableCoord) {
@@ -36,5 +38,16 @@ public class BoolQuery implements Query {
     this.boost = boost;
     this.disableCoord = disableCoord;
   }
-
+  
+  public BoolQuery(List<Query> must, List<Query> must_not, List<Query> should, Integer minimumNumberShouldMatch,
+	      double boost, Boolean disableCoord, Relevance relevance) {
+	    super();
+	    this.must = must;
+	    this.must_not = must_not;
+	    this.should = should;
+	    this.minimumNumberShouldMatch = minimumNumberShouldMatch;
+	    this.boost = boost;
+	    this.disableCoord = disableCoord;
+	    this.relevance = relevance;
+  }
 }

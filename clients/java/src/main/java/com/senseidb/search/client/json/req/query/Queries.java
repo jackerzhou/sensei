@@ -36,8 +36,16 @@ public class Queries {
     }
     public static BoolQuery bool(List<Query> must, List<Query> must_not, List<Query> should,
         double boost) {
-    return new BoolQuery(must, must_not, should, null, boost, null);
-}
+    	return new BoolQuery(must, must_not, should, null, boost, null);
+    }
+    public static BoolQuery bool(List<Query> must, List<Query> must_not, List<Query> should, int minimumNumberShouldMatch,
+            double boost, boolean disableCoord, Relevance relevance) {
+        return new BoolQuery(must, must_not, should, minimumNumberShouldMatch, boost, disableCoord, relevance);
+    }
+    public static BoolQuery bool(List<Query> must, List<Query> must_not, List<Query> should,
+        double boost, Relevance relevance) {
+    	return new BoolQuery(must, must_not, should, null, boost, null, relevance);
+    }
     public static StringQuery.Builder stringQueryBuilder() {
         return StringQuery.builder();
     }
