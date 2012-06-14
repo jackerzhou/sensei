@@ -1,12 +1,10 @@
 package com.senseidb.search.query;
 
 import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.ConstantScoreQuery;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.FilteredQuery;
 import org.apache.lucene.search.Query;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -64,7 +62,8 @@ public class FilteredQueryConstructor extends QueryConstructor
     {
       throw new JSONException(e);
     }
-
-    return new FilteredQuery(query, filter);
+    Query q = new FilteredQuery(query, filter);
+    q.setBoost((float)jsonQuery.optDouble(BOOST_PARAM, 1.0));
+    return q;
   }
 }
