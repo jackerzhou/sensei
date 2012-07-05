@@ -25,6 +25,7 @@ public class BoolQuery implements Query {
   @JsonField("minimum_number_should_match")
   Integer minimumNumberShouldMatch;
   double boost;
+  @JsonField("disable_coord")
   Boolean disableCoord;
   Relevance relevance;
 
