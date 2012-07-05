@@ -110,6 +110,7 @@ public class QueryStringQueryConstructor extends QueryConstructor {
           qparser.setFuzzyPrefixLength(fuzzy_prefix_length);
           qparser.setLowercaseExpandedTerms(lowercase_expanded_terms);
           qparser.setPhraseSlop(phrase_slop);
+          qparser.setDefaultOperator(default_operator.equals("or") ? QueryParser.OR_OPERATOR : QueryParser.AND_OPERATOR);
           queries.add(qparser.parse(queryText));
         }
 
