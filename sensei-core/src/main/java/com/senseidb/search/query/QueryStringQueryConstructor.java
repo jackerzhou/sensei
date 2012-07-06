@@ -89,7 +89,7 @@ public class QueryStringQueryConstructor extends QueryConstructor {
         int phrase_slop = jsonQuery.optInt(PHRASE_SLOP_PARAM, 0);
 
         //boolean analyze_wildcard = jsonQuery.optBoolean(ANALYZE_WILDCARD_PARAM, false);
-        //boolean auto_generate_phrase_queries = jsonQuery.optBoolean(AUTO_GENERATE_PHRASE_QUERIES_PARAM, false);
+        boolean auto_generate_phrase_queries = jsonQuery.optBoolean(AUTO_GENERATE_PHRASE_QUERIES_PARAM, false);
 
         boolean use_dis_max = jsonQuery.optBoolean(USE_DIS_MAX_PARAM, true);
         float tie_breaker = (float)jsonQuery.optDouble(TIE_BREAKER_PARAM, .0);
@@ -111,6 +111,7 @@ public class QueryStringQueryConstructor extends QueryConstructor {
           qparser.setLowercaseExpandedTerms(lowercase_expanded_terms);
           qparser.setPhraseSlop(phrase_slop);
           qparser.setDefaultOperator(default_operator.equals("or") ? QueryParser.OR_OPERATOR : QueryParser.AND_OPERATOR);
+          qparser.setAutoGeneratePhraseQueries(auto_generate_phrase_queries);
           queries.add(qparser.parse(queryText));
         }
 
