@@ -23,6 +23,7 @@ public class SenseiHit {
   private List<FieldValue> storedFields = new ArrayList<FieldValue>();
   @JsonField("termvectors")
   private Map<String, List<TermFrequency>> fieldTermFrequencies = new HashMap<String, List<TermFrequency>>();
+  @JsonField("_explanation")
   private Explanation explanation;
   private Map<String, List<String>> fieldValues = new HashMap<String, List<String>>();
 
