@@ -22,6 +22,7 @@ esac
 
 
 lib=$bin/../sensei-core/target/lib
+client_lib=$bin/../clients/java/target
 dist=$bin/../sensei-core/target
 resources=$bin/../resources
 #logs=$bin/../logs
@@ -46,7 +47,7 @@ HEAP_OPTS="-Xmx1g -Xms1g -XX:NewSize=256m"
 MAIN_CLASS="com.senseidb.search.node.SenseiServer"
 
 
-CLASSPATH=$1/ext/:$resources/:$lib/*:$dist/*:$1/ext/*
+CLASSPATH=$1/ext/:$resources/:$lib/*:$dist/*:$1/ext/*:$client_lib/*
 
 PIDFILE=$logs/sensei-search-node.pid
 
