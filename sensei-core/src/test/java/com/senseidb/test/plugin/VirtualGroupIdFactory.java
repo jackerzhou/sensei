@@ -3,16 +3,16 @@ package com.senseidb.test.plugin;
 import java.util.HashSet;
 import java.util.Map;
 
-import com.linkedin.bobo.api.BoboIndexReader;
-import com.linkedin.bobo.facets.data.FacetDataCache;
-import com.linkedin.bobo.facets.data.FacetDataFetcher;
-import com.linkedin.bobo.facets.data.PredefinedTermListFactory;
-import com.linkedin.bobo.facets.data.TermFixedLengthLongArrayListFactory;
-import com.linkedin.bobo.facets.impl.VirtualSimpleFacetHandler;
+import proj.zoie.api.ZoieIndexReader;
+
+import com.browseengine.bobo.api.BoboIndexReader;
+import com.browseengine.bobo.facets.data.FacetDataCache;
+import com.browseengine.bobo.facets.data.FacetDataFetcher;
+import com.browseengine.bobo.facets.data.PredefinedTermListFactory;
+import com.browseengine.bobo.facets.data.TermFixedLengthLongArrayListFactory;
+import com.browseengine.bobo.facets.impl.VirtualSimpleFacetHandler;
 import com.senseidb.plugin.SenseiPluginFactory;
 import com.senseidb.plugin.SenseiPluginRegistry;
-
-import com.linkedin.zoie.api.ZoieIndexReader;
 
 public class VirtualGroupIdFactory implements SenseiPluginFactory<VirtualSimpleFacetHandler> {
   @Override

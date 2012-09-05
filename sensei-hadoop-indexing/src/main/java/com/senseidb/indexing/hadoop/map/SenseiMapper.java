@@ -22,22 +22,20 @@ import org.apache.hadoop.mapred.Reporter;
 import org.apache.hadoop.util.ReflectionUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.util.Version;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.linkedin.zoie.api.ZoieSegmentReader;
-import com.linkedin.zoie.api.indexing.AbstractZoieIndexable;
-import com.linkedin.zoie.api.indexing.ZoieIndexable;
-import com.linkedin.zoie.api.indexing.ZoieIndexable.IndexingReq;
+import proj.zoie.api.ZoieSegmentReader;
+import proj.zoie.api.indexing.AbstractZoieIndexable;
+import proj.zoie.api.indexing.ZoieIndexable;
+import proj.zoie.api.indexing.ZoieIndexable.IndexingReq;
 
 import com.senseidb.conf.SchemaConverter;
 import com.senseidb.conf.SenseiSchema;
 import com.senseidb.indexing.DefaultJsonSchemaInterpreter;
-import com.senseidb.indexing.JsonFilter;
 import com.senseidb.indexing.ShardingStrategy;
 import com.senseidb.indexing.hadoop.keyvalueformat.IntermediateForm;
 import com.senseidb.indexing.hadoop.keyvalueformat.Shard;

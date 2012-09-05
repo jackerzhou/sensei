@@ -4,8 +4,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.linkedin.bobo.facets.data.TermListFactory;
-import com.linkedin.bobo.facets.FacetHandler;
+import com.browseengine.bobo.facets.FacetHandler;
 
 public abstract class AbstractFacetHandlerSenseiPluginFactory implements SenseiPluginFactory<FacetHandler>
 {

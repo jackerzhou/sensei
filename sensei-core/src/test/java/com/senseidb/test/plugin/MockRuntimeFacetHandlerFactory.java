@@ -1,8 +1,8 @@
 package com.senseidb.test.plugin;
 
-import com.linkedin.bobo.facets.FacetHandlerInitializerParam;
-import com.linkedin.bobo.facets.RuntimeFacetHandler;
-import com.linkedin.bobo.facets.AbstractRuntimeFacetHandlerFactory;
+import com.browseengine.bobo.facets.AbstractRuntimeFacetHandlerFactory;
+import com.browseengine.bobo.facets.FacetHandlerInitializerParam;
+import com.browseengine.bobo.facets.RuntimeFacetHandler;
 
 public class MockRuntimeFacetHandlerFactory extends AbstractRuntimeFacetHandlerFactory<FacetHandlerInitializerParam, RuntimeFacetHandler<?>> {
 

@@ -22,7 +22,6 @@ import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.scheme.SchemeRegistry;
-import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.SingleClientConnManager;
 import org.apache.http.params.BasicHttpParams;
@@ -32,8 +31,8 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HttpContext;
 import org.apache.log4j.Logger;
 
-import com.linkedin.zoie.api.DataConsumer.DataEvent;
-import com.linkedin.zoie.impl.indexing.StreamDataProvider;
+import proj.zoie.api.DataConsumer.DataEvent;
+import proj.zoie.impl.indexing.StreamDataProvider;
 
 public abstract class HttpStreamDataProvider<D> extends StreamDataProvider<D> implements HttpDataProviderAdminMBean{
 
@@ -239,7 +238,7 @@ public abstract class HttpStreamDataProvider<D> extends StreamDataProvider<D> im
 	  }
 	  
 	  DataEvent<D> data = null;
-	  if (_currentDataIter.hasNext()){
+	  if (_currentDataIter != null && _currentDataIter.hasNext()) {
 	    data = _currentDataIter.next();
 	    if (data!=null){
 	      _offset = data.getVersion();

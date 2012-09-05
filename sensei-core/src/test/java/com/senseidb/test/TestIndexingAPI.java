@@ -15,12 +15,9 @@ import junit.framework.TestCase;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Field.Index;
-import org.apache.lucene.document.Field.Store;
-import org.apache.lucene.document.Field.TermVector;
 
-import com.linkedin.zoie.api.indexing.ZoieIndexable;
-import com.linkedin.zoie.api.indexing.ZoieIndexable.IndexingReq;
+import proj.zoie.api.indexing.ZoieIndexable;
+import proj.zoie.api.indexing.ZoieIndexable.IndexingReq;
 
 import com.senseidb.indexing.DefaultSenseiInterpreter;
 import com.senseidb.indexing.DeleteChecker;

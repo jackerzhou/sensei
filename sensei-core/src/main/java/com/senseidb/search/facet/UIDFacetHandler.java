@@ -6,6 +6,7 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Properties;
 
@@ -14,23 +15,22 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.DocIdSetIterator;
 import org.apache.lucene.search.ScoreDoc;
 
-import com.linkedin.zoie.api.DocIDMapper;
-import com.linkedin.zoie.api.ZoieIndexReader;
-import com.linkedin.zoie.api.ZoieSegmentReader;
-import scala.actors.threadpool.Arrays;
+import proj.zoie.api.DocIDMapper;
+import proj.zoie.api.ZoieIndexReader;
+import proj.zoie.api.ZoieSegmentReader;
 
-import com.linkedin.bobo.api.BoboIndexReader;
-import com.linkedin.bobo.api.BrowseSelection;
-import com.linkedin.bobo.api.FacetSpec;
-import com.linkedin.bobo.docidset.EmptyDocIdSet;
-import com.linkedin.bobo.docidset.RandomAccessDocIdSet;
-import com.linkedin.bobo.facets.FacetCountCollectorSource;
-import com.linkedin.bobo.facets.FacetHandler;
-import com.linkedin.bobo.facets.filter.EmptyFilter;
-import com.linkedin.bobo.facets.filter.RandomAccessFilter;
-import com.linkedin.bobo.facets.filter.RandomAccessNotFilter;
-import com.linkedin.bobo.sort.DocComparator;
-import com.linkedin.bobo.sort.DocComparatorSource;
+import com.browseengine.bobo.api.BoboIndexReader;
+import com.browseengine.bobo.api.BrowseSelection;
+import com.browseengine.bobo.api.FacetSpec;
+import com.browseengine.bobo.docidset.EmptyDocIdSet;
+import com.browseengine.bobo.docidset.RandomAccessDocIdSet;
+import com.browseengine.bobo.facets.FacetCountCollectorSource;
+import com.browseengine.bobo.facets.FacetHandler;
+import com.browseengine.bobo.facets.filter.EmptyFilter;
+import com.browseengine.bobo.facets.filter.RandomAccessFilter;
+import com.browseengine.bobo.facets.filter.RandomAccessNotFilter;
+import com.browseengine.bobo.sort.DocComparator;
+import com.browseengine.bobo.sort.DocComparatorSource;
 import com.kamikaze.docidset.impl.IntArrayDocIdSet;
 
 public class UIDFacetHandler extends FacetHandler<long[]> {
@@ -140,7 +140,7 @@ public class UIDFacetHandler extends FacetHandler<long[]> {
         final IntArrayDocIdSet intArraySet = new IntArrayDocIdSet(docidList.size());
         boolean deletesPresent = delDocIds != null && delDocIds.length > 0;       
         for (int docid : docidList){
-          if (!deletesPresent  || java.util.Arrays.binarySearch(delDocIds,docid) < 0) {
+          if (!deletesPresent  || Arrays.binarySearch(delDocIds,docid) < 0) {
             intArraySet.addDoc(docid);            
           } 
         }        

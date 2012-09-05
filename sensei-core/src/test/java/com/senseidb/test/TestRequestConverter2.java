@@ -16,8 +16,8 @@ import org.json.JSONObject;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.linkedin.bobo.api.FacetSpec.FacetSortSpec;
-import com.linkedin.bobo.facets.FacetHandlerInitializerParam;
+import com.browseengine.bobo.api.FacetSpec.FacetSortSpec;
+import com.browseengine.bobo.facets.FacetHandlerInitializerParam;
 import com.senseidb.search.req.SenseiRequest;
 import com.senseidb.util.RequestConverter2;
 
@@ -87,7 +87,7 @@ public class TestRequestConverter2
   @Test
   public void test() throws Exception
   {
-    SenseiRequest req = RequestConverter2.fromJSON(senseiRequestJson);
+    SenseiRequest req = RequestConverter2.fromJSON(senseiRequestJson, null);
     
     //testquery;
 //    assertTrue("query_string is not equal", req.getQuery().toString().equals("this AND that OR thus"));

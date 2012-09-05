@@ -1,5 +1,7 @@
 package com.senseidb.svc.impl;
 
+import static com.senseidb.servlet.SenseiSearchServletParams.PARAM_RESULT_HIT_UID;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,23 +9,23 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.sensei.search.req.protobuf.SenseiReqProtoSerializer;
 import org.apache.log4j.Logger;
 import org.apache.lucene.search.Query;
 
-import com.linkedin.zoie.api.ZoieIndexReader;
-import com.linkedin.zoie.api.ZoieIndexReader.SubReaderAccessor;
-import com.linkedin.zoie.api.ZoieIndexReader.SubReaderInfo;
+import proj.zoie.api.ZoieIndexReader;
+import proj.zoie.api.ZoieIndexReader.SubReaderAccessor;
+import proj.zoie.api.ZoieIndexReader.SubReaderInfo;
 
-import com.linkedin.bobo.api.BoboBrowser;
-import com.linkedin.bobo.api.BoboIndexReader;
-import com.linkedin.bobo.api.BrowseException;
-import com.linkedin.bobo.api.BrowseHit;
-import com.linkedin.bobo.api.BrowseRequest;
-import com.linkedin.bobo.api.BrowseResult;
-import com.linkedin.bobo.api.MultiBoboBrowser;
+import com.browseengine.bobo.api.BoboBrowser;
+import com.browseengine.bobo.api.BoboIndexReader;
+import com.browseengine.bobo.api.BrowseException;
+import com.browseengine.bobo.api.BrowseHit;
+import com.browseengine.bobo.api.BrowseRequest;
+import com.browseengine.bobo.api.BrowseResult;
+import com.browseengine.bobo.api.MultiBoboBrowser;
 import com.linkedin.norbert.network.JavaSerializer;
 import com.linkedin.norbert.network.Serializer;
+import com.sensei.search.req.protobuf.SenseiReqProtoSerializer;
 import com.senseidb.indexing.SenseiIndexPruner;
 import com.senseidb.indexing.SenseiIndexPruner.IndexReaderSelector;
 import com.senseidb.metrics.MetricsConstants;
@@ -95,7 +97,9 @@ public class CoreSenseiServiceImpl extends AbstractSenseiCoreService<SenseiReque
 
 	      int docid = hit.getDocid();
 	      SubReaderInfo<BoboIndexReader> readerInfo = subReaderAccessor.getSubReaderInfo(docid);
-	      long uid = (long) ((ZoieIndexReader<BoboIndexReader>) readerInfo.subreader.getInnerReader()).getUID(readerInfo.subdocid);
+        Long uid = (Long)hit.getRawField(PARAM_RESULT_HIT_UID);
+        if (uid == null)
+          uid = ((ZoieIndexReader<BoboIndexReader>) readerInfo.subreader.getInnerReader()).getUID(readerInfo.subdocid);
 	      senseiHit.setUID(uid);
 	      senseiHit.setDocid(docid);
 	      senseiHit.setScore(hit.getScore());
@@ -146,7 +150,6 @@ public class CoreSenseiServiceImpl extends AbstractSenseiCoreService<SenseiReque
 	@Override
 	public SenseiResult handlePartitionedRequest(final SenseiRequest request,
 			List<BoboIndexReader> readerList,SenseiQueryBuilderFactory queryBuilderFactory) throws Exception {
-		SubReaderAccessor<BoboIndexReader> subReaderAccessor = ZoieIndexReader.getSubReaderAccessor(readerList);
 	    MultiBoboBrowser browser = null;
 
 	    try
@@ -182,6 +185,8 @@ public class CoreSenseiServiceImpl extends AbstractSenseiCoreService<SenseiReque
 	          SenseiMapFunctionWrapper mapWrapper = new SenseiMapFunctionWrapper(request.getMapReduceFunction(), _core.getSystemInfo().getFacetInfos());	        
             breq.setMapReduceWrapper(mapWrapper);
 	        }	        
+          SubReaderAccessor<BoboIndexReader> subReaderAccessor =
+              ZoieIndexReader.getSubReaderAccessor(validatedSegmentReaders);
 	        SenseiResult res = browse(browser, breq, subReaderAccessor);
 	        int totalDocs = res.getTotalDocs()+skipDocs.get();
 	        res.setTotalDocs(totalDocs);

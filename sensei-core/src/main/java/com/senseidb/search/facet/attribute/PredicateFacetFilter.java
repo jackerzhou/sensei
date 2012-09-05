@@ -4,18 +4,19 @@ import java.io.IOException;
 
 import org.apache.lucene.search.DocIdSetIterator;
 
-import com.linkedin.bobo.api.BoboIndexReader;
-import com.linkedin.bobo.docidset.EmptyDocIdSet;
-import com.linkedin.bobo.docidset.RandomAccessDocIdSet;
-import com.linkedin.bobo.facets.data.FacetDataCache;
-import com.linkedin.bobo.facets.filter.AdaptiveFacetFilter.FacetDataCacheBuilder;
-import com.linkedin.bobo.facets.filter.RandomAccessFilter;
+import com.browseengine.bobo.api.BoboIndexReader;
+import com.browseengine.bobo.docidset.EmptyDocIdSet;
+import com.browseengine.bobo.docidset.RandomAccessDocIdSet;
+import com.browseengine.bobo.facets.data.FacetDataCache;
+
+import com.browseengine.bobo.facets.filter.RandomAccessFilter;
+import com.browseengine.bobo.facets.range.SimpleDataCacheBuilder;
 
 public class PredicateFacetFilter extends RandomAccessFilter {
-  private final FacetDataCacheBuilder dataCacheBuilder;
+  private final SimpleDataCacheBuilder dataCacheBuilder;
   private final FacetPredicate facetPredicate;
   
-  public PredicateFacetFilter(FacetDataCacheBuilder dataCacheBuilder, FacetPredicate facetPredicate) {
+  public PredicateFacetFilter(SimpleDataCacheBuilder dataCacheBuilder, FacetPredicate facetPredicate) {
     this.dataCacheBuilder = dataCacheBuilder;
     this.facetPredicate = facetPredicate;
   }

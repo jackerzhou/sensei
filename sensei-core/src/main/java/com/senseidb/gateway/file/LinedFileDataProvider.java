@@ -10,8 +10,8 @@ import java.util.Comparator;
 
 import org.apache.log4j.Logger;
 
-import com.linkedin.zoie.api.DataConsumer.DataEvent;
-import com.linkedin.zoie.impl.indexing.StreamDataProvider;
+import proj.zoie.api.DataConsumer.DataEvent;
+import proj.zoie.impl.indexing.StreamDataProvider;
 
 public abstract class LinedFileDataProvider<D> extends StreamDataProvider<D> {
 
@@ -19,7 +19,7 @@ public abstract class LinedFileDataProvider<D> extends StreamDataProvider<D> {
 	
 	private final File _file;
 	private long _startingOffset;
-	private long _offset;
+	protected long _offset;
 	
 	private BufferedReader _reader;
 	
@@ -57,7 +57,10 @@ public abstract class LinedFileDataProvider<D> extends StreamDataProvider<D> {
 
 	@Override
 	public void setStartingOffset(String version) {
-		_startingOffset = Long.parseLong(version);
+    if (version != null)
+      _startingOffset = Long.parseLong(version);
+    else
+      _startingOffset = 0;
 	}
 
 	@Override

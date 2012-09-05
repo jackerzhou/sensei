@@ -5,9 +5,9 @@ import java.nio.charset.Charset;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.senseidb.conf.SenseiSchema;
+import proj.zoie.store.ZoieStoreSerializer;
 
-import com.linkedin.zoie.store.ZoieStoreSerializer;
+import com.senseidb.conf.SenseiSchema;
 
 public class JSONDataSerializer implements ZoieStoreSerializer<JSONObject>{
 

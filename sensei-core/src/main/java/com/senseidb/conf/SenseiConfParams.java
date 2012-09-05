@@ -17,11 +17,13 @@ public interface SenseiConfParams {
 	public static final String SENSEI_CLUSTER_TIMEOUT = "sensei.cluster.timeout";
 
 	public static final String SENSEI_INDEX_DIR = "sensei.index.directory";
-
+	public static final String SENSEI_FEDERATED_BROKER = "sensei.federated.broker";
+	public static final String SENSEI_FEDERATED_BROKER_PRUNER = "sensei.federated.broker.pruner";
 	public static final String SENSEI_INDEX_BATCH_SIZE = "sensei.index.batchSize";
 	public static final String SENSEI_INDEX_BATCH_DELAY = "sensei.index.batchDelay";
 	public static final String SENSEI_INDEX_BATCH_MAXSIZE = "sensei.index.maxBatchSize";
 	public static final String SENSEI_INDEX_REALTIME = "sensei.index.realtime";
+	
 	public static final String SENSEI_INDEX_FRESHNESS = "sensei.index.freshness";
 	public static final String SENSEI_SKIP_BAD_RECORDS = "sensei.index.skipBadRecords";
 
@@ -52,6 +54,7 @@ public interface SenseiConfParams {
 	public static final String SENSEI_HOURGLASS_SCHEDULE = "sensei.indexer.hourglass.schedule";
 	public static final String SENSEI_HOURGLASS_TRIMTHRESHOLD = "sensei.indexer.hourglass.trimthreshold";
 	public static final String SENSEI_HOURGLASS_FREQUENCY = "sensei.indexer.hourglass.frequency";
+	public static final String SENSEI_HOURGLASS_APPENDONLY = "sensei.indexer.hourglass.appendonly";
 	public static final String SENSEI_HOURGLASS_FREQUENCY_MIN = "minute";
 	public static final String SENSEI_HOURGLASS_FREQUENCY_HOUR = "hour";
 	public static final String SENSEI_HOURGLASS_FREQUENCY_DAY = "day";
@@ -63,6 +66,8 @@ public interface SenseiConfParams {
 	public static final String SERVER_BROKER_MINTHREAD = "sensei.broker.minThread";
 	public static final String SERVER_BROKER_MAXTHREAD = "sensei.broker.maxThread";
 	public static final String SERVER_BROKER_MAXWAIT = "sensei.broker.maxWaittime";
+  public static final String ALLOW_PARTIAL_MERGE = "sensei.broker.allowPartialMerge";
+
 
 	public static final String SENSEI_BROKER_POLL_INTERVAL = "sensei.broker.pollInterval";
 	public static final String SENSEI_BROKER_MIN_RESPONSES = "sensei.broker.minResponses";
@@ -79,7 +84,11 @@ public interface SenseiConfParams {
   public static final String SENSEI_ZOIE_RETENTION_TIMEUNIT = "sensei.index.retention.column.timeunit";
 
 	public static final String SENSEI_MX4J_PORT = "sensei.mx4j.port";
-
+	
+	public static final String SENSEI_INDEX_ACTIVITY_FILTER = "sensei.index.activity.filter";
+	public static final String SENSEI_INDEX_ACTIVITY_PURGE_FREQUENCY_HOURS = "sensei.index.activity.purge.hours";
+	public static final String SENSEI_INDEX_ACTIVITY_PURGE_FREQUENCY_MINUTES = "sensei.index.activity.purge.minutes";
+	
 	public static final Comparator<String> DEFAULT_VERSION_STRING_COMPARATOR = new Comparator<String>(){
 		@Override
 	    public int compare(String o1, String o2) {

@@ -4,12 +4,23 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import com.linkedin.bobo.mapred.MapReduceResult;
+import com.browseengine.bobo.mapred.MapReduceResult;
 import com.senseidb.search.req.SenseiResult;
+import com.senseidb.search.req.mapred.CombinerStage;
 import com.senseidb.search.req.mapred.SenseiMapReduce;
 
+/**
+ * Is the part of the SenseiRequest, keeps the logic of merging  result, that were got on the map/combine phase
+ *
+ */
 public class SenseiReduceFunctionWrapper {
  
+  /**
+   * Combine callback
+   * @param mapReduceFunction
+   * @param results
+   * @return
+   */
   public static MapReduceResult combine(SenseiMapReduce mapReduceFunction, List<MapReduceResult> results) {
     MapReduceResult ret = null;
     if (results.isEmpty()) {
@@ -19,11 +30,17 @@ public class SenseiReduceFunctionWrapper {
     for (int i = 1; i < results.size(); i++) {
       ret.getMapResults().addAll(results.get(i).getMapResults());
     }
-    ret.setMapResults(mapReduceFunction.combine(ret.getMapResults()));
+    System.out.println("##Combine on node level");
+    ret.setMapResults(new ArrayList(mapReduceFunction.combine(ret.getMapResults(), CombinerStage.nodeLevel)));
     return ret;
   }
  
   
+  /** Reduce callback
+   * @param mapReduceFunction
+   * @param results
+   * @return
+   */
   public static MapReduceResult reduce(SenseiMapReduce mapReduceFunction, List<MapReduceResult> results) {
     MapReduceResult ret = null;
     if (results.isEmpty()) {

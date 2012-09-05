@@ -16,24 +16,25 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
-import com.linkedin.zoie.api.DataConsumer;
-import com.linkedin.zoie.api.DataConsumer.DataEvent;
-import com.linkedin.zoie.api.DataProvider;
-import com.linkedin.zoie.api.Zoie;
-import com.linkedin.zoie.api.ZoieException;
-import com.linkedin.zoie.api.ZoieIndexReader;
-import com.linkedin.zoie.impl.indexing.StreamDataProvider;
-import com.linkedin.zoie.impl.indexing.ZoieConfig;
-import com.linkedin.zoie.mbean.DataProviderAdmin;
-import com.linkedin.zoie.mbean.DataProviderAdminMBean;
+import proj.zoie.api.DataConsumer;
+import proj.zoie.api.DataConsumer.DataEvent;
+import proj.zoie.api.DataProvider;
+import proj.zoie.api.Zoie;
+import proj.zoie.api.ZoieException;
+import proj.zoie.api.ZoieIndexReader;
+import proj.zoie.impl.indexing.StreamDataProvider;
+import proj.zoie.impl.indexing.ZoieConfig;
+import proj.zoie.mbean.DataProviderAdmin;
+import proj.zoie.mbean.DataProviderAdminMBean;
 
-import com.linkedin.bobo.api.BoboIndexReader;
+import com.browseengine.bobo.api.BoboIndexReader;
 import com.senseidb.conf.SenseiSchema;
 import com.senseidb.gateway.SenseiGateway;
 import com.senseidb.jmx.JmxUtil;
 import com.senseidb.metrics.MetricsConstants;
 import com.senseidb.plugin.SenseiPluginRegistry;
 import com.senseidb.search.node.SenseiIndexingManager;
+import com.senseidb.search.plugin.PluggableSearchEngineManager;
 import com.yammer.metrics.Metrics;
 import com.yammer.metrics.core.Meter;
 import com.yammer.metrics.core.MetricName;
@@ -82,13 +83,15 @@ public class DefaultStreamingIndexingManager implements SenseiIndexingManager<JS
 	private final SenseiGateway<?> _gateway;
   private final ShardingStrategy _shardingStrategy;
   private final Comparator<String> _versionComparator;
-
+  private final PluggableSearchEngineManager pluggableSearchEngineManager;
   private SenseiPluginRegistry pluginRegistry;
+  
 
+  
 
 	public DefaultStreamingIndexingManager(SenseiSchema schema,Configuration senseiConfig, 
-	    SenseiPluginRegistry pluginRegistry, SenseiGateway<?> gateway,ShardingStrategy shardingStrategy){
-	  _dataProvider = null;
+	    SenseiPluginRegistry pluginRegistry, SenseiGateway<?> gateway, ShardingStrategy shardingStrategy, PluggableSearchEngineManager pluggableSearchEngineManager){
+	    _dataProvider = null;
 	  _myconfig = senseiConfig.subset(CONFIG_PREFIX);
      this.pluginRegistry = pluginRegistry;
 	  _oldestSinceKey = null;
@@ -96,7 +99,7 @@ public class DefaultStreamingIndexingManager implements SenseiIndexingManager<JS
 	  _zoieSystemMap = null;
 	  _dataCollectorMap = new LinkedHashMap<Integer, Collection<DataEvent<JSONObject>>>();
 	  _gateway = gateway;
-
+	  this.pluggableSearchEngineManager = pluggableSearchEngineManager;
 	  if (_gateway!=null){
 	    _versionComparator = _gateway.getVersionComparator();
 	  }
@@ -109,9 +112,15 @@ public class DefaultStreamingIndexingManager implements SenseiIndexingManager<JS
 	public void updateOldestSinceKey(String sinceKey){
 	    if(_oldestSinceKey == null){
 	      _oldestSinceKey = sinceKey;
+	      if (_dataProvider != null) {
+	        _dataProvider.setStartingOffset(_oldestSinceKey);
+	      }
 	    }
 	    else if(sinceKey!=null && _versionComparator.compare(sinceKey, _oldestSinceKey) <0 ){
 	      _oldestSinceKey = sinceKey;
+	      if (_dataProvider != null) {
+	        _dataProvider.setStartingOffset(_oldestSinceKey);
+	      }
 	    }
 	}
 
@@ -126,8 +135,6 @@ public class DefaultStreamingIndexingManager implements SenseiIndexingManager<JS
 
 		_zoieSystemMap = zoieSystemMap;
 
-    _dataProvider = buildDataProvider();
-
 	    Iterator<Integer> it = zoieSystemMap.keySet().iterator();
 	    while(it.hasNext()){
 	      int part = it.next();
@@ -136,9 +143,15 @@ public class DefaultStreamingIndexingManager implements SenseiIndexingManager<JS
 	      _dataCollectorMap.put(part, new LinkedList<DataEvent<JSONObject>>());
 	    }
 
+	    if (pluggableSearchEngineManager != null && pluggableSearchEngineManager.getOldestVersion() != null && !("".equals(pluggableSearchEngineManager.getOldestVersion()))) {
+	      updateOldestSinceKey(pluggableSearchEngineManager.getOldestVersion());	    
+	    }
+
+      _dataProvider = buildDataProvider();
+
 	    if (_dataProvider!=null){
 	    _dataProvider.setDataConsumer(consumer);
-	    }
+	    }	   
 	}
 
   @Override
@@ -151,7 +164,7 @@ public class DefaultStreamingIndexingManager implements SenseiIndexingManager<JS
 		StreamDataProvider<JSONObject> dataProvider = null;
     if (_gateway!=null){
 		  try{
-		    dataProvider = _gateway.buildDataProvider(_senseiSchema, _oldestSinceKey, pluginRegistry,_shardingStrategy,_dataCollectorMap.keySet());
+		    dataProvider = _gateway.buildDataProvider(_senseiSchema, _oldestSinceKey, pluginRegistry,_shardingStrategy,_zoieSystemMap.keySet());
         long maxEventsPerMin = _myconfig.getLong(EVTS_PER_MIN,40000);
         dataProvider.setMaxEventsPerMinute(maxEventsPerMin);
         int batchSize = _myconfig.getInt(BATCH_SIZE,1);
@@ -173,6 +186,9 @@ public class DefaultStreamingIndexingManager implements SenseiIndexingManager<JS
 
 	@Override
 	public void shutdown() {
+	  if (pluggableSearchEngineManager != null) {
+	    pluggableSearchEngineManager.close();
+	  }
 	  if (_dataProvider!=null){
 	    _dataProvider.stop();
 	  }
@@ -258,11 +274,11 @@ public class DefaultStreamingIndexingManager implements SenseiIndexingManager<JS
           byte[] src = null;
           long uid = Long.parseLong(event.getString(_senseiSchema.getUidField()));
           for (ZoieIndexReader<BoboIndexReader> reader : readers)
-          {
+          {            
             src = reader.getStoredValue(uid);
             if (src != null)
               break;
-          }
+          }          
           byte[] data = null;
 
           if (_senseiSchema.isCompressSrcData())
@@ -300,7 +316,7 @@ public class DefaultStreamingIndexingManager implements SenseiIndexingManager<JS
     }
 
     @Override
-    public void consume(Collection<com.linkedin.zoie.api.DataConsumer.DataEvent<JSONObject>> data) throws ZoieException
+    public void consume(Collection<proj.zoie.api.DataConsumer.DataEvent<JSONObject>> data) throws ZoieException
     {
       UpdateBatchSizeMeter.mark(data.size());
       ProviderBatchSizeMeter.mark(_dataProvider.getBatchSize());
@@ -314,14 +330,21 @@ public class DefaultStreamingIndexingManager implements SenseiIndexingManager<JS
             continue;
 
           _currentVersion = dataEvt.getVersion();
-
+          if (pluggableSearchEngineManager != null && pluggableSearchEngineManager.acceptEventsForAllPartitions()) {
+            obj = pluggableSearchEngineManager.update(obj, _currentVersion);
+          }
           int routeToPart = _shardingStrategy.caculateShard(_maxPartitionId, obj);
           Collection<DataEvent<JSONObject>> partDataSet = _dataCollectorMap.get(routeToPart);
           if (partDataSet != null)
           {
-            JSONObject rewrited = rewriteData(obj, routeToPart);
+            JSONObject rewrited = obj;
+            if (pluggableSearchEngineManager != null && !pluggableSearchEngineManager.acceptEventsForAllPartitions()) {
+              rewrited = pluggableSearchEngineManager.update(obj, dataEvt.getVersion());
+            }
+            rewrited = rewriteData(obj, routeToPart);
             if (rewrited != null)
             {
+              
               if (rewrited != obj)
                 dataEvt = new DataEvent<JSONObject>(rewrited, dataEvt.getVersion());
               partDataSet.add(dataEvt);

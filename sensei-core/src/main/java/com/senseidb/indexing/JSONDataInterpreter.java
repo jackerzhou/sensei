@@ -4,9 +4,10 @@ import org.apache.lucene.document.Document;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.linkedin.zoie.api.indexing.AbstractZoieIndexable;
-import com.linkedin.zoie.api.indexing.AbstractZoieIndexableInterpreter;
-import com.linkedin.zoie.api.indexing.ZoieIndexable;
+import proj.zoie.api.indexing.AbstractZoieIndexable;
+import proj.zoie.api.indexing.AbstractZoieIndexableInterpreter;
+import proj.zoie.api.indexing.ZoieIndexable;
+import proj.zoie.api.indexing.ZoieIndexable.IndexingReq;
 
 
 public abstract class JSONDataInterpreter extends AbstractZoieIndexableInterpreter<JSONObject> {

@@ -6,9 +6,8 @@ import java.util.List;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Filter;
 import org.json.JSONArray;
-import org.json.JSONObject;
 
-import com.linkedin.bobo.facets.filter.OrFilter;
+import com.browseengine.bobo.facets.filter.OrFilter;
 
 
 public class OrFilterConstructor extends FilterConstructor {

@@ -6,8 +6,8 @@ import java.util.Set;
 
 import org.json.JSONObject;
 
-import com.linkedin.zoie.impl.indexing.StreamDataProvider;
-import com.linkedin.zoie.impl.indexing.ZoieConfig;
+import proj.zoie.impl.indexing.StreamDataProvider;
+import proj.zoie.impl.indexing.ZoieConfig;
 
 import com.senseidb.gateway.SenseiGateway;
 import com.senseidb.indexing.DataSourceFilter;

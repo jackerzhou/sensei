@@ -6,10 +6,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.linkedin.zoie.api.DataConsumer;
-import com.linkedin.zoie.api.ZoieException;
-import com.linkedin.zoie.impl.indexing.StreamDataProvider;
-import com.linkedin.zoie.impl.indexing.ZoieConfig;
+import proj.zoie.api.DataConsumer;
+import proj.zoie.api.DataConsumer.DataEvent;
+import proj.zoie.api.ZoieException;
+import proj.zoie.impl.indexing.StreamDataProvider;
+import proj.zoie.impl.indexing.ZoieConfig;
 
 import com.senseidb.gateway.SenseiGateway;
 import com.senseidb.gateway.file.LinedFileDataProviderBuilder;
