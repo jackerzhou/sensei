@@ -1,20 +1,21 @@
 package com.senseidb.util;
 
 
-import com.browseengine.bobo.api.BrowseRequest;
-import com.browseengine.bobo.api.BrowseSelection;
-import com.senseidb.search.node.SenseiQueryBuilder;
-import com.senseidb.search.node.SenseiQueryBuilderFactory;
-import com.senseidb.search.req.SenseiRequest;
-
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
 import org.apache.lucene.search.Filter;
 import org.apache.lucene.search.Query;
+
+import com.browseengine.bobo.api.BrowseRequest;
+import com.browseengine.bobo.api.BrowseSelection;
+import com.senseidb.search.node.SenseiQueryBuilder;
+import com.senseidb.search.node.SenseiQueryBuilderFactory;
+import com.senseidb.search.req.SenseiRequest;
 
 public class RequestConverter {
 	private static Logger logger = Logger.getLogger(RequestConverter.class);

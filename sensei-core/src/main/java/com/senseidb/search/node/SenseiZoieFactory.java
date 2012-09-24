@@ -3,8 +3,8 @@ package com.senseidb.search.node;
 import java.io.File;
 import java.util.Comparator;
 
-import proj.zoie.api.Zoie;
 import proj.zoie.api.DirectoryManager.DIRECTORY_MODE;
+import proj.zoie.api.Zoie;
 import proj.zoie.api.indexing.ZoieIndexableInterpreter;
 import proj.zoie.impl.indexing.ZoieConfig;
 

@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import proj.zoie.api.DataConsumer;
+import proj.zoie.api.DataConsumer.DataEvent;
 import proj.zoie.api.ZoieException;
 import proj.zoie.impl.indexing.StreamDataProvider;
 import proj.zoie.impl.indexing.ZoieConfig;

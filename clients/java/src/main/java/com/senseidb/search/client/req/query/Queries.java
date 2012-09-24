@@ -66,7 +66,10 @@ public class Queries {
     }
     public static TextQuery textQuery(String field, String text, Operator operator, double boost) {
       return new TextQuery(field, text, operator, null, boost);
-  }
+    }
+    public static TextQuery textQuery(String field, String text, Operator operator, double boost, String analyzer) {
+        return new TextQuery(field, text, operator, null, boost, analyzer);
+    }
     public static FilteredQuery filteredQuery(Query query, Filter filter, double boost) {
         return new FilteredQuery(query, filter, boost);
     }

@@ -46,14 +46,16 @@ public class SenseiHitJsonHandler implements JsonHandler<SenseiHit> {
       senseiHit.setGroupHits(groupHits);
     }*/
     SenseiHit senseiHit =  JsonDeserializer.deserialize(SenseiHit.class, json, false);
-    JSONArray storedFieldsArr = json.optJSONArray("stored");
+    JSONArray storedFieldsArr = json.optJSONArray("_stored");
     if (storedFieldsArr != null) {
       List<FieldValue> storedFields = new ArrayList<FieldValue>(storedFieldsArr.length());
       for (int i = 0; i< storedFieldsArr.length(); i++) {
         JSONObject storedJson = storedFieldsArr.optJSONObject(i);
         if (storedJson != null) {
-          String fieldName = (String) storedJson.keys().next();
-          storedFields.add(new FieldValue(fieldName, storedJson.optString(fieldName)));
+          String fieldName = storedJson.optString("name");
+          if(fieldName.equals("_STORE"))
+        	  continue;
+          storedFields.add(new FieldValue(fieldName, storedJson.optString("val")));
         }
       }
       senseiHit.setStoredFields(storedFields);

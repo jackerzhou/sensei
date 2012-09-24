@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import com.browseengine.bobo.facets.data.TermListFactory;
 import com.browseengine.bobo.facets.FacetHandler;
 
 public abstract class AbstractFacetHandlerSenseiPluginFactory implements SenseiPluginFactory<FacetHandler>

@@ -24,6 +24,7 @@ public class BoolQuery extends Query {
   @JsonField("minimum_number_should_match")
   Integer minimumNumberShouldMatch;
   double boost;
+  @JsonField("disable_coord")
   Boolean disableCoord;
 
   public BoolQuery(List<Query> must, List<Query> must_not, List<Query> should, Integer minimumNumberShouldMatch,
@@ -36,5 +37,5 @@ public class BoolQuery extends Query {
     this.boost = boost;
     this.disableCoord = disableCoord;
   }
-
+  
 }

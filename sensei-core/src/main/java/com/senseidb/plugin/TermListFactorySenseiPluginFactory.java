@@ -6,7 +6,6 @@ import java.util.Map;
 
 import com.browseengine.bobo.facets.data.TermFixedLengthLongArrayListFactory;
 import com.browseengine.bobo.facets.data.TermListFactory;
-
 import com.senseidb.indexing.DefaultSenseiInterpreter;
 
 public class TermListFactorySenseiPluginFactory implements SenseiPluginFactory<TermListFactory>

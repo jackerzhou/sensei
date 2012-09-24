@@ -10,7 +10,6 @@ import com.browseengine.bobo.api.BoboIndexReader;
 import com.browseengine.bobo.facets.FacetCountCollector;
 import com.browseengine.bobo.mapred.BoboMapFunctionWrapper;
 import com.browseengine.bobo.mapred.MapReduceResult;
-import com.browseengine.bobo.util.MemoryManager;
 import com.senseidb.search.req.SenseiSystemInfo.SenseiFacetInfo;
 import com.senseidb.search.req.mapred.CombinerStage;
 import com.senseidb.search.req.mapred.FacetCountAccessor;

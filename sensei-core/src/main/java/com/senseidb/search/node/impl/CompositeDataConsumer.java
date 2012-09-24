@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import proj.zoie.api.DataConsumer;
+import proj.zoie.api.DataConsumer.DataEvent;
 import proj.zoie.api.ZoieException;
 
 public class CompositeDataConsumer<T> implements DataConsumer<T> {

@@ -3,6 +3,8 @@ package com.senseidb.test.plugin;
 import java.util.HashSet;
 import java.util.Map;
 
+import proj.zoie.api.ZoieIndexReader;
+
 import com.browseengine.bobo.api.BoboIndexReader;
 import com.browseengine.bobo.facets.data.FacetDataCache;
 import com.browseengine.bobo.facets.data.FacetDataFetcher;
@@ -11,8 +13,6 @@ import com.browseengine.bobo.facets.data.TermFixedLengthLongArrayListFactory;
 import com.browseengine.bobo.facets.impl.VirtualSimpleFacetHandler;
 import com.senseidb.plugin.SenseiPluginFactory;
 import com.senseidb.plugin.SenseiPluginRegistry;
-
-import proj.zoie.api.ZoieIndexReader;
 
 public class VirtualGroupIdFactory implements SenseiPluginFactory<VirtualSimpleFacetHandler> {
   @Override

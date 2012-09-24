@@ -76,6 +76,21 @@ public class FilterJsonHandler implements JsonHandler<Filter>{
         if (bean instanceof QueryFilter) {
           return new JSONObject().put("query", queryJsonHandler.serialize(((QueryFilter) bean).getQuery()));
         }
+        if(bean instanceof CustomFilter) {
+        	CustomFilter custom = (CustomFilter) bean;
+            JSONObject ret = new JSONObject();
+            if (custom.getCls() != null) {
+                ret.put("class", custom.getCls());
+            }
+            if (custom.getParams() != null) {
+                ret.put("params", new JSONArray(custom.getParams()));
+            }
+            if (custom.getValues() != null) {
+                ret.put("values", new JSONArray(custom.getValues()));
+            }
+            
+            return new JSONObject().put("custom", ret);
+        }
         throw new UnsupportedOperationException(bean.getClass() + " is not supported");
 
     }

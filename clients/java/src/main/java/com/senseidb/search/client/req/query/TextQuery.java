@@ -101,6 +101,7 @@ public class TextQuery extends FieldAwareQuery {
   private Operator operator;
   private Type type;
   private double boost;
+  private String analyzer;
 
   public TextQuery(String field, String value, Operator operator, Type type, double boost) {
     super();
@@ -109,6 +110,24 @@ public class TextQuery extends FieldAwareQuery {
     this.operator = operator;
     this.type = type;
     this.boost = boost;
+  }
+  
+  public TextQuery(String field, String value, Operator operator, Type type, double boost, String analyzer) {
+	    super();
+	    this.field = field;
+	    this.value = value;
+	    this.operator = operator;
+	    this.type = type;
+	    this.boost = boost;
+	    this.analyzer = analyzer;
+  }
+
+  public String getAnalyzer() {
+	return analyzer;
+  }
+
+  public void setAnalyzer(String analyzer) {
+	this.analyzer = analyzer;
   }
 
   public static enum Type {

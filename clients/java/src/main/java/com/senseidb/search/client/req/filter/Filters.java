@@ -13,6 +13,10 @@ import com.senseidb.search.client.req.filter.Filter.AndOr;
 import com.senseidb.search.client.req.query.Query;
 
 public class Filters {
+	public static CustomFilter customFilter(String cls, List<String> params, List<Object> values) {
+		return new CustomFilter(cls, params, values);
+	}
+	
     public static Ids ids(List<String> values, List<String> excludes) {
         return new Ids(values, excludes);
     }

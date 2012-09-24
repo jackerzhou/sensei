@@ -7,11 +7,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
 
-import com.browseengine.bobo.api.FacetSpec;
-import com.linkedin.norbert.javacompat.cluster.Node;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 
+import com.browseengine.bobo.api.FacetSpec;
+import com.linkedin.norbert.javacompat.cluster.Node;
 import com.senseidb.conf.SenseiSchema;
 import com.senseidb.search.req.ErrorType;
 import com.senseidb.search.req.SenseiError;

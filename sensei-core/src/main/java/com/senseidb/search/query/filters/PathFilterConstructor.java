@@ -11,9 +11,8 @@ import org.json.JSONObject;
 
 import com.browseengine.bobo.api.BoboIndexReader;
 import com.browseengine.bobo.api.BrowseSelection;
-import com.browseengine.bobo.facets.impl.PathFacetHandler;
 import com.browseengine.bobo.facets.FacetHandler;
-
+import com.browseengine.bobo.facets.impl.PathFacetHandler;
 import com.browseengine.bobo.query.MatchAllDocIdSetIterator;
 
 public class PathFilterConstructor extends FilterConstructor

@@ -36,6 +36,7 @@ public class SenseiServer {
   private static final String AVAILABLE = "available";
   private static final String UNAVAILABLE = "unavailable";
   private static final String DUMMY_OUT_IP = "74.125.224.0";
+  public static String CONFIG_DIR = null;
 
   private int _id;
   private int _port;
@@ -395,6 +396,7 @@ public class SenseiServer {
 
     try {
       confDir = new File(args[0]);
+      CONFIG_DIR = args[0];
     }
     catch(Exception e) {
       System.out.println(help());

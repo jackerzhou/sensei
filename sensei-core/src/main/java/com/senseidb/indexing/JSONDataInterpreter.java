@@ -7,6 +7,7 @@ import org.json.JSONObject;
 import proj.zoie.api.indexing.AbstractZoieIndexable;
 import proj.zoie.api.indexing.AbstractZoieIndexableInterpreter;
 import proj.zoie.api.indexing.ZoieIndexable;
+import proj.zoie.api.indexing.ZoieIndexable.IndexingReq;
 
 
 public abstract class JSONDataInterpreter extends AbstractZoieIndexableInterpreter<JSONObject> {

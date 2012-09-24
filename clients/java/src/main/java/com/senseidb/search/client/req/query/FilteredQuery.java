@@ -31,6 +31,7 @@ public class FilteredQuery extends Query {
     super();
     this.query = query;
     this.filter = filter;
+    this.boost = boost;
   }
 
 }

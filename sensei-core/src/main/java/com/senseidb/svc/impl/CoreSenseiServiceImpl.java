@@ -1,5 +1,7 @@
 package com.senseidb.svc.impl;
 
+import static com.senseidb.servlet.SenseiSearchServletParams.PARAM_RESULT_HIT_UID;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +9,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.sensei.search.req.protobuf.SenseiReqProtoSerializer;
 import org.apache.log4j.Logger;
 import org.apache.lucene.search.Query;
 
@@ -24,6 +25,7 @@ import com.browseengine.bobo.api.BrowseResult;
 import com.browseengine.bobo.api.MultiBoboBrowser;
 import com.linkedin.norbert.network.JavaSerializer;
 import com.linkedin.norbert.network.Serializer;
+import com.sensei.search.req.protobuf.SenseiReqProtoSerializer;
 import com.senseidb.indexing.SenseiIndexPruner;
 import com.senseidb.indexing.SenseiIndexPruner.IndexReaderSelector;
 import com.senseidb.metrics.MetricsConstants;
@@ -38,8 +40,6 @@ import com.senseidb.util.RequestConverter;
 import com.yammer.metrics.Metrics;
 import com.yammer.metrics.core.MetricName;
 import com.yammer.metrics.core.Timer;
-
-import static com.senseidb.servlet.SenseiSearchServletParams.PARAM_RESULT_HIT_UID;
 
 public class CoreSenseiServiceImpl extends AbstractSenseiCoreService<SenseiRequest, SenseiResult> {
 	public static final Serializer<SenseiRequest, SenseiResult> JAVA_SERIALIZER =

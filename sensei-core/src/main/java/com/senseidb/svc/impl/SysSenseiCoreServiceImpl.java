@@ -3,7 +3,6 @@ package com.senseidb.svc.impl;
 import java.io.IOException;
 import java.util.List;
 
-import com.sensei.search.req.protobuf.SenseiSysReqProtoSerializer;
 import org.apache.log4j.Logger;
 
 import com.browseengine.bobo.api.BoboBrowser;
@@ -11,6 +10,7 @@ import com.browseengine.bobo.api.BoboIndexReader;
 import com.browseengine.bobo.api.MultiBoboBrowser;
 import com.linkedin.norbert.network.JavaSerializer;
 import com.linkedin.norbert.network.Serializer;
+import com.sensei.search.req.protobuf.SenseiSysReqProtoSerializer;
 import com.senseidb.search.node.SenseiCore;
 import com.senseidb.search.node.SenseiQueryBuilderFactory;
 import com.senseidb.search.req.SenseiRequest;

@@ -10,19 +10,13 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.PropertiesConfiguration;
 import org.json.JSONObject;
-import org.junit.BeforeClass;
 
 import proj.zoie.api.DataConsumer;
-import proj.zoie.api.ZoieException;
 import proj.zoie.api.DataConsumer.DataEvent;
+import proj.zoie.api.ZoieException;
 import proj.zoie.impl.indexing.StreamDataProvider;
 import proj.zoie.impl.indexing.ZoieConfig;
-
-import com.senseidb.gateway.SenseiGateway;
-import com.senseidb.plugin.SenseiPluginRegistry;
 
 public class BaseGatewayTestUtil {
   static File dataFile = new File("src/test/resources/test.json");
