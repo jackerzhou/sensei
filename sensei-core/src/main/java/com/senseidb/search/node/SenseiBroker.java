@@ -12,6 +12,7 @@ import javax.management.ObjectName;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.search.SortField;
 
 import proj.zoie.api.indexing.AbstractZoieIndexable;
 
@@ -39,29 +40,21 @@ import com.yammer.metrics.core.MetricName;
  * mechanism to handle distributed search, which does not support request based
  * context sensitive routing.
  */
-public class SenseiBroker extends AbstractConsistentHashBroker<SenseiRequest, SenseiResult> implements SenseiBrokerMBean
+public class SenseiBroker extends AbstractConsistentHashBroker<SenseiRequest, SenseiResult> 
 {
   private final static Logger logger = Logger.getLogger(SenseiBroker.class);
-  private final static long TIMEOUT_MILLIS = 8000L;
-  private long _timeoutMillis = TIMEOUT_MILLIS;
+
+ 
   private final boolean allowPartialMerge;
   private final ClusterClient clusterClient;
   private static Counter numberOfNodesInTheCluster = Metrics.newCounter(new MetricName(SenseiBroker.class, "numberOfNodesInTheCluster"));
-  public SenseiBroker(PartitionedNetworkClient<String> networkClient, ClusterClient clusterClient, boolean allowPartialMerge) throws NorbertException
-  {
+  
+  public SenseiBroker(PartitionedNetworkClient<String> networkClient, ClusterClient clusterClient, boolean allowPartialMerge)
+      throws NorbertException {
     super(networkClient, CoreSenseiServiceImpl.JAVA_SERIALIZER);
-	this.clusterClient = clusterClient;
+    this.clusterClient = clusterClient;
     this.allowPartialMerge = allowPartialMerge;
-    MBeanServer platformMBeanServer = ManagementFactory.getPlatformMBeanServer();
-	ObjectName name;
-	try {
-		name = new ObjectName("com.senseidb.search.node:type=SenseiBroker");
-		platformMBeanServer.registerMBean(this, name);
-	    
-	} catch (Exception e) {
-		throw new RuntimeException(e.getMessage(), e);
-	}	
-	clusterClient.addListener(this);
+    clusterClient.addListener(this);
     logger.info("created broker instance " + networkClient + " " + clusterClient);
   }
 
@@ -166,18 +159,45 @@ public class SenseiBroker extends AbstractConsistentHashBroker<SenseiRequest, Se
     if (!request.isFetchStoredFields())
       request.setFetchStoredFields(request.isFetchStoredValue());
 
+    // Rewrite select list to include sort and group by fields:
+    if (request.getSelectSet() != null)
+    {
+      List<String> selectList = request.getSelectList();
+      SortField[] sortFields = request.getSort();
+      if (sortFields != null && sortFields.length != 0)
+      {
+        for (int i = 0; i < sortFields.length; ++i)
+        {
+          if (sortFields[i].getType() != SortField.SCORE && sortFields[i].getType() != SortField.DOC)
+          {
+            String field = sortFields[i].getField();
+            selectList.add(field);
+          }
+        }
+      }
+      String[] groupByFields = request.getGroupBy();
+      if (groupByFields != null && groupByFields.length != 0)
+      {
+        for (int i = 0; i < groupByFields.length; ++i)
+        {
+          selectList.add(groupByFields[i]);
+        }
+      }
+      String[] distinctFields = request.getDistinct();
+      if (distinctFields != null && distinctFields.length != 0)
+      {
+        for (int i = 0; i < distinctFields.length; ++i)
+        {
+          selectList.add(distinctFields[i]);
+        }
+      }
+      request.setSelectList(selectList);
+    }
+
     return request;
   }
 
-  @Override
-  public void setTimeoutMillis(long timeoutMillis){
-    _timeoutMillis = timeoutMillis;
-  }
-
-  @Override
-  public long getTimeoutMillis(){
-    return _timeoutMillis;
-  }
+  
 
   public void handleClusterConnected(Set<Node> nodes)
   {
@@ -218,19 +238,10 @@ public class SenseiBroker extends AbstractConsistentHashBroker<SenseiRequest, Se
     return allowPartialMerge;
   }
 
-	@Override
+
 	public int getNumberOfNodes() {
 		return clusterClient.getNodes().size();
 	}
   
 	
-	
-	@Override
-	public String getNodeStatistics() {
-		StringBuilder str = new StringBuilder("Nodes:");
-		for (Node node : clusterClient.getNodes()) {
-			str.append("[nodeId=" + node.getId() + ", partitions=["	+ node.getPartitionIds() + "]],");
-		}
-		return str.toString();
-	}
 }

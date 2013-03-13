@@ -13,18 +13,19 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import javax.management.MBeanServer;
+import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 
 import org.apache.log4j.Logger;
 
 import proj.zoie.api.DocIDMapper;
-import proj.zoie.api.Zoie;
+import proj.zoie.api.IndexReaderFactory;
 import proj.zoie.api.ZoieIndexReader;
 
 import com.browseengine.bobo.api.BoboIndexReader;
 import com.senseidb.conf.SenseiConfParams;
-import com.senseidb.metrics.MetricsConstants;
 import com.senseidb.plugin.SenseiPluginRegistry;
+import com.senseidb.search.node.SenseiCore;
 import com.yammer.metrics.Metrics;
 import com.yammer.metrics.core.Counter;
 import com.yammer.metrics.core.MetricName;
@@ -34,28 +35,35 @@ public class PurgeUnusedActivitiesJob implements Runnable, PurgeUnusedActivities
   private final static Logger logger = Logger.getLogger(PurgeUnusedActivitiesJob.class);
   
   private final CompositeActivityValues compositeActivityValues;
-  private final Set<Zoie<BoboIndexReader, ?>> zoieSystems;
   private static Timer timer = Metrics.newTimer(new MetricName(PurgeUnusedActivitiesJob.class, "purgeUnusedActivityIndexes"), TimeUnit.MILLISECONDS, TimeUnit.SECONDS);
   private static Counter foundActivitiesToPurge = Metrics.newCounter(new MetricName(PurgeUnusedActivitiesJob.class, "foundActivitiesToPurge"));
+  private static Counter recentUidsSavedFromPurge = Metrics.newCounter(new MetricName(PurgeUnusedActivitiesJob.class, "recentUidsSavedFromPurge"));
+  
   protected ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 
   private final long frequencyInMillis;
-  public PurgeUnusedActivitiesJob(CompositeActivityValues compositeActivityValues, Set<Zoie<BoboIndexReader,?>> zoieSystems, long frequencyInMillis) {
+
+  private SenseiCore senseiCore;
+  public PurgeUnusedActivitiesJob(CompositeActivityValues compositeActivityValues, SenseiCore senseiCore, long frequencyInMillis) {
     this.compositeActivityValues = compositeActivityValues;
-    this.zoieSystems = zoieSystems;
+    this.senseiCore = senseiCore;
     this.frequencyInMillis = frequencyInMillis;
     
   }
   public void start() {
-    executorService.scheduleAtFixedRate(this, frequencyInMillis, frequencyInMillis, TimeUnit.MILLISECONDS); 
+    if (frequencyInMillis > 0) {
+      executorService.scheduleAtFixedRate(this, frequencyInMillis, frequencyInMillis, TimeUnit.MILLISECONDS); 
+    }
     MBeanServer platformMBeanServer = ManagementFactory.getPlatformMBeanServer();
     ObjectName name;
     try {
       name = new ObjectName("com.senseidb.indexing.activity:type=PurgeUnusedActivitiesJobInvoke");
-      platformMBeanServer.registerMBean(this, name);
-        
+     Set<ObjectInstance> mbeans = platformMBeanServer.queryMBeans(name, null);
+    if (mbeans != null && mbeans.isEmpty()) {
+       platformMBeanServer.registerMBean(this, name);
+     }        
     } catch (Exception e) {
-      throw new RuntimeException(e.getMessage(), e);
+      logger.error("Couldn't register the  PurgeUnusedActivitiesJob operation", e);
     }
   }
   public void stop() {
@@ -87,8 +95,10 @@ public class PurgeUnusedActivitiesJob implements Runnable, PurgeUnusedActivities
     }  finally {
         compositeActivityValues.globalLock.readLock().unlock();
     }     
+    int bitSetLength = keys.length;
     BitSet foundSet = new BitSet(keys.length); 
-    for (Zoie<BoboIndexReader, ?> zoie : zoieSystems) {
+    for (int partition : senseiCore.getPartitions()) {
+      IndexReaderFactory<ZoieIndexReader<BoboIndexReader>> zoie =  senseiCore.getIndexReaderFactory(partition);
       List<ZoieIndexReader<BoboIndexReader>> indexReaders = null;      
       try {
         indexReaders = zoie.getIndexReaders();
@@ -111,6 +121,8 @@ public class PurgeUnusedActivitiesJob implements Runnable, PurgeUnusedActivities
         }        
       }
     }
+    int recovered = compositeActivityValues.recentlyAddedUids.markRecentAsFoundInBitSet(keys, foundSet, bitSetLength);
+    recentUidsSavedFromPurge.inc(recovered);
     int found = foundSet.cardinality();
     if (found == keys.length) {
       logger.info("purgeUnusedActivitiesJob found  no activities to purge");
