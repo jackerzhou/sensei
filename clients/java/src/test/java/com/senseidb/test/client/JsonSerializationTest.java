@@ -103,7 +103,7 @@ public class JsonSerializationTest extends Assert {
         System.out.println(json.toString());    	
     }
     
-    @Test
+    // @Test
     public void testQuerySomething() throws Exception {
     	SenseiServiceProxy ssp = new SenseiServiceProxy("localhost", 8100);
     	SenseiClientRequest.Builder builder = SenseiClientRequest.builder();

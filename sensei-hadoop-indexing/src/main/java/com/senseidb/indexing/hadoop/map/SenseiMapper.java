@@ -28,6 +28,7 @@ import org.apache.lucene.util.Version;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
 import proj.zoie.api.ZoieSegmentReader;
 import proj.zoie.api.indexing.AbstractZoieIndexable;
 import proj.zoie.api.indexing.ZoieIndexable;
@@ -45,7 +46,6 @@ public class SenseiMapper extends MapReduceBase implements Mapper<Object, Object
 
 	private final static Logger logger = Logger.getLogger(SenseiMapper.class);
 	private static DefaultJsonSchemaInterpreter _defaultInterpreter = null;
-	private boolean _use_remote_schema = false;
 	private volatile boolean _isConfigured = false;
 	private Configuration _conf;
 	private Shard[] _shards;
@@ -150,35 +150,38 @@ public class SenseiMapper extends MapReduceBase implements Mapper<Object, Object
 			return;
 		
 		String version = _conf.get(SenseiJobConfig.DOCUMENT_ANALYZER_VERSION);
-		if(version == null)
-			 throw new IllegalStateException("version has not been specified");
 		
 		String analyzerName = _conf.get(SenseiJobConfig.DOCUMENT_ANALYZER);
 		if(analyzerName == null)
 			 throw new IllegalStateException("analyzer name has not been specified");
 		
 		Class analyzerClass = Class.forName(analyzerName);
-		Constructor constructor = analyzerClass.getConstructor(Version.class);
-		analyzer = (Analyzer) constructor.newInstance((Version) Enum.valueOf((Class)Class.forName("org.apache.lucene.util.Version"), version));
-
+		
+		if(null != version){
+		    Constructor constructor = analyzerClass.getConstructor(Version.class);
+		    analyzer = (Analyzer) constructor.newInstance((Version) Enum.valueOf((Class)Class.forName("org.apache.lucene.util.Version"), version));
+		}else{
+		    Constructor constructor = analyzerClass.getConstructor();
+		    analyzer = (Analyzer) constructor.newInstance();
+		}
 	}
 
 	private void setSchema(JobConf conf) throws Exception {
 
-		String _schema_uri = null;
-		String metadataFileName = conf.get(SenseiJobConfig.SCHEMA_FILE_URL);
-		
-		Path[] localFiles = DistributedCache.getLocalCacheFiles(conf);
-		if (localFiles != null) {
-		  for (int i = 0; i < localFiles.length; i++) {
-			  String strFileName = localFiles[i].toString();
-			  if (strFileName.contains(conf.get(SenseiJobConfig.SCHEMA_FILE_URL))) {
-				  metadataFileName = strFileName;
-				  break;
-			  }
-		  }
-		}
-		
+    String _schema_uri = null;
+    String metadataFileName = conf.get(SenseiJobConfig.SCHEMA_FILE_URL);
+
+    Path[] localFiles = DistributedCache.getLocalCacheFiles(conf);
+    if (localFiles != null) {
+      String metadataFileBaseName = new Path(metadataFileName).getName();
+      for (int i = 0; i < localFiles.length; i++) {
+        if (localFiles[i].getName().equals(metadataFileBaseName)) {
+          metadataFileName = localFiles[i].toString();
+          break;
+        }
+      }
+    }
+
 		if (metadataFileName != null && metadataFileName.length() > 0) {
 			_schema_uri = "file:///" + metadataFileName;
 

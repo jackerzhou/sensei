@@ -213,9 +213,11 @@ public class DefaultJsonSchemaInterpreter extends
     return _customIndexingPipeline;
   }
   
+
   public void setJsonFilter(JsonFilter jsonFilter){
     _jsonFilter = jsonFilter;
   }
+
 
   public static List<String> tokenize(String val, String delim)
   {
@@ -290,6 +292,7 @@ public class DefaultJsonSchemaInterpreter extends
     else {
       filtered = src;
     }
+
     return new AbstractZoieIndexable(){
 
       @Override
@@ -346,7 +349,7 @@ public class DefaultJsonSchemaInterpreter extends
                 else{
                   strVal = String.valueOf(val);
                 }
-                Field metaField = new Field(name,strVal,Store.NO,Index.NOT_ANALYZED_NO_NORMS);
+                Field metaField = new Field(name,strVal,fldDef.store, Index.NOT_ANALYZED_NO_NORMS);
                 metaField.setOmitNorms(true);
                 metaField.setIndexOptions(IndexOptions.DOCS_ONLY);
                 luceneDoc.add(metaField);
@@ -425,10 +428,15 @@ public class DefaultJsonSchemaInterpreter extends
           Object type = src.remove(SenseiSchema.EVENT_TYPE_FIELD);
           try
           {
+            String srcData = src.optString(_schema.getSrcDataField(), null);
+            if (srcData == null)
+            {
+              srcData = src.toString();
+            }
             if (_compressSrcData)
-              data = compress(src.toString().getBytes("UTF-8"));
+              data = compress(srcData.getBytes("UTF-8"));
             else
-              data = src.toString().getBytes("UTF-8");
+              data = srcData.getBytes("UTF-8");
           }
           catch (Exception e)
           {
@@ -455,9 +463,7 @@ public class DefaultJsonSchemaInterpreter extends
       public boolean isStorable() {
         return true;
       }
-      
-      
-      
+
     };
   }
 
