@@ -30,3 +30,4 @@ sensei-war/src/main/resources/
 *.iml
 *.ipr
 *.iws
+sensei-ba/src/test/resources/data/index/*

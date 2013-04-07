@@ -19,6 +19,39 @@ import proj.zoie.impl.indexing.StreamDataProvider;
 import proj.zoie.impl.indexing.ZoieConfig;
 
 public class BaseGatewayTestUtil {
+  public static final class TestDataConsumer implements DataConsumer<JSONObject> {
+    private final LinkedList<JSONObject> jsonList;
+    private volatile String version;
+
+    public TestDataConsumer(LinkedList<JSONObject> jsonList) {
+      this.jsonList = jsonList;
+    }
+
+    @Override
+    public void consume(
+        Collection<DataEvent<JSONObject>> events)
+        throws ZoieException {
+
+      for (DataEvent<JSONObject> event : events){
+        JSONObject jsonObj = event.getData();
+        System.out.println(jsonObj+", version: "+event.getVersion());
+        jsonList.add(jsonObj);
+        version = event.getVersion();
+      }
+     
+    }
+
+    @Override
+    public String getVersion() {
+      return version;
+    }
+
+    @Override
+    public Comparator<String> getVersionComparator() {
+      return ZoieConfig.DEFAULT_VERSION_COMPARATOR;
+    }
+  }
+
   static File dataFile = new File("src/test/resources/test.json");
   
   
@@ -57,34 +90,7 @@ public class BaseGatewayTestUtil {
   public static void doTest(StreamDataProvider<JSONObject> dataProvider) throws Exception{
     final LinkedList<JSONObject> jsonList = new LinkedList<JSONObject>();
     
-    dataProvider.setDataConsumer(new DataConsumer<JSONObject>(){
-
-      private volatile String version;
-      @Override
-      public void consume(
-          Collection<DataEvent<JSONObject>> events)
-          throws ZoieException {
-
-        for (DataEvent<JSONObject> event : events){
-          JSONObject jsonObj = event.getData();
-          System.out.println(jsonObj+", version: "+event.getVersion());
-          jsonList.add(jsonObj);
-          version = event.getVersion();
-        }
-       
-      }
-
-      @Override
-      public String getVersion() {
-        return version;
-      }
-
-      @Override
-      public Comparator<String> getVersionComparator() {
-        return ZoieConfig.DEFAULT_VERSION_COMPARATOR;
-      }
-      
-    });
+    dataProvider.setDataConsumer(new TestDataConsumer(jsonList));
     dataProvider.start();
     
     while(true){

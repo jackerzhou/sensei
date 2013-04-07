@@ -22,6 +22,7 @@ import com.senseidb.indexing.SenseiIndexPruner.DefaultSenseiIndexPruner;
 import com.senseidb.jmx.JmxUtil;
 import com.senseidb.search.plugin.PluggableSearchEngineManager;
 import com.senseidb.search.req.SenseiSystemInfo;
+import com.senseidb.search.req.mapred.impl.FieldAccessorFactory;
 
 
 public class SenseiCore{
@@ -42,17 +43,20 @@ public class SenseiCore{
   private PluggableSearchEngineManager pluggableSearchEngineManager;
 
   private final SenseiIndexReaderDecorator decorator;
+
+  private final FieldAccessorFactory fieldAccessorFactory;
     
   public SenseiCore(int id,int[] partitions,
             SenseiZoieFactory<?> zoieSystemFactory,
             SenseiIndexingManager indexManager,
-            SenseiQueryBuilderFactory queryBuilderFactory, SenseiIndexReaderDecorator decorator){
+            SenseiQueryBuilderFactory queryBuilderFactory, FieldAccessorFactory fieldAccessorFactory, SenseiIndexReaderDecorator decorator){
 
     _zoieFactory = zoieSystemFactory;
     _indexManager = indexManager;
     _queryBuilderFactory = queryBuilderFactory;
     _partitions = partitions;
     _id = id;
+    this.fieldAccessorFactory = fieldAccessorFactory;
     this.decorator = decorator;
     
     _readerFactoryMap = new HashMap<Integer,Zoie<BoboIndexReader,?>>();
@@ -249,6 +253,10 @@ public class SenseiCore{
 
   public SenseiIndexReaderDecorator getDecorator() {
     return decorator;
+  }
+
+  public FieldAccessorFactory getFieldAccessorFactory() {
+    return fieldAccessorFactory;
   }
   
 }

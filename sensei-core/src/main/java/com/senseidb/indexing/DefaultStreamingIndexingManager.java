@@ -53,6 +53,8 @@ public class DefaultStreamingIndexingManager implements SenseiIndexingManager<JS
 	private static final String EVTS_PER_MIN = "eventsPerMin";
 
 	private static final String BATCH_SIZE = "batchSize";
+	
+	private static final String VOLATILE_TIME = "maxVolatileTimeInMillis";
 
   private static final String EVENT_CREATED_TIMESTAMP_FIELD = "eventCreatedTimestampField"; 
 
@@ -185,6 +187,8 @@ public class DefaultStreamingIndexingManager implements SenseiIndexingManager<JS
         dataProvider.setMaxEventsPerMinute(maxEventsPerMin);
         int batchSize = _myconfig.getInt(BATCH_SIZE,1);
         dataProvider.setBatchSize(batchSize);
+        long maxVolatileTimeInMillis  = _myconfig.getLong(VOLATILE_TIME, Long.MAX_VALUE);
+        dataProvider.setMaxVolatileTime(maxVolatileTimeInMillis);
 	   	}
 		  catch(Exception e){
 			  throw new ConfigurationException(e.getMessage(),e);
@@ -375,9 +379,8 @@ public class DefaultStreamingIndexingManager implements SenseiIndexingManager<JS
             rewrited = rewriteData(obj, routeToPart);
             if (rewrited != null)
             {
-              
               if (rewrited != obj)
-                dataEvt = new DataEvent<JSONObject>(rewrited, dataEvt.getVersion());
+                dataEvt = new DataEvent<JSONObject>(rewrited, dataEvt.getVersion(), dataEvt.isDelete());
               partDataSet.add(dataEvt);
             }
           }
@@ -403,7 +406,7 @@ public class DefaultStreamingIndexingManager implements SenseiIndexingManager<JS
               else if (_currentVersion != null && !_currentVersion.equals(partDataSet.getLast().getVersion()))
               {
                 DataEvent<JSONObject> last = partDataSet.pollLast();
-                partDataSet.add(new DataEvent<JSONObject>(last.getData(), _currentVersion));
+                partDataSet.add(new DataEvent<JSONObject>(last.getData(), _currentVersion, last.isDelete()));
               }
               dataConsumer.consume(partDataSet);
             }
