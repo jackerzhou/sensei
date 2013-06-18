@@ -17,5 +17,13 @@ public class FacetResult {
     public Integer getCount() {
       return count;
     }
-
+	public void setValue(String value) {
+		this.value = value;
+	}
+	public void setSelected(Boolean selected) {
+		this.selected = selected;
+	}
+	public void setCount(Integer count) {
+		this.count = count;
+	}
 }
