@@ -454,6 +454,7 @@ public class SenseiServer {
       public void run(){
 
         try{
+          server.setAvailable(false);
           jettyServer.stop();
         } catch (Exception e) {
           logger.error(e.getMessage(),e);

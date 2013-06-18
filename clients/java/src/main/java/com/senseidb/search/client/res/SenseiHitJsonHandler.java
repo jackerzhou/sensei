@@ -52,10 +52,7 @@ public class SenseiHitJsonHandler implements JsonHandler<SenseiHit> {
       for (int i = 0; i< storedFieldsArr.length(); i++) {
         JSONObject storedJson = storedFieldsArr.optJSONObject(i);
         if (storedJson != null) {
-          String fieldName = storedJson.optString("name");
-          if(fieldName.equals("_STORE"))
-        	  continue;
-          storedFields.add(new FieldValue(fieldName, storedJson.optString("val")));
+          storedFields.add(new FieldValue(storedJson.optString("name"), storedJson.optString("val")));
         }
       }
       senseiHit.setStoredFields(storedFields);
