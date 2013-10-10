@@ -42,7 +42,7 @@ if [[ ! -d $logs ]]; then
   mkdir $logs
 fi
 
-HEAP_OPTS="-Xmx4096m -Xms4096m -Xmn256m"
+HEAP_OPTS="-Xmx4096m -Xms4096m -Xmn512m"
 #HEAP_OPTS="-Xmx5120m -Xms2048m" #-XX:NewSize=1524m" # -d64 for 64-bit awesomeness
 #HEAP_OPTS="-Xmx1g -Xms1g -XX:NewSize=256m"
 # HEAP_OPTS="-Xmx1024m -Xms512m -XX:NewSize=128m"
