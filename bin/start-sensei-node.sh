@@ -42,13 +42,14 @@ if [[ ! -d $logs ]]; then
   mkdir $logs
 fi
 
-HEAP_OPTS="-Xmx5120m -Xms2048m" #-XX:NewSize=1524m" # -d64 for 64-bit awesomeness
+HEAP_OPTS="-Xmx4096m -Xms4096m -Xmn256m"
+#HEAP_OPTS="-Xmx5120m -Xms2048m" #-XX:NewSize=1524m" # -d64 for 64-bit awesomeness
 #HEAP_OPTS="-Xmx1g -Xms1g -XX:NewSize=256m"
 # HEAP_OPTS="-Xmx1024m -Xms512m -XX:NewSize=128m"
 # HEAP_OPTS="-Xmx512m -Xms256m -XX:NewSize=64m"
-# GC_OPTS="-verbosegc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintGCDateStamps -XX:+UseConcMarkSweepGC -XX:+UseParNewGC"
+GC_OPTS="-verbosegc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintGCDateStamps -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:+UseCMSCompactAtFullCollection -XX:CMSFullGCsBeforeCompaction=1"
 #JAVA_DEBUG="-Xdebug -Xrunjdwp:transport=dt_socket,address=1044,server=y,suspend=n"
-GC_OPTS="-XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:-UseGCOverheadLimit"
+# GC_OPTS="-XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:-UseGCOverheadLimit"
 JAVA_OPTS="-server -d64"
 #JMX_OPTS="-Djava.rmi.server.hostname=$IP -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=18889 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
 
