@@ -42,12 +42,12 @@ if [[ ! -d $logs ]]; then
   mkdir $logs
 fi
 
-HEAP_OPTS="-Xmx4096m -Xms4096m -Xmn512m"
+HEAP_OPTS="-Xmx4096m -Xms4096m -Xmn512m -XX:PretenureSizeThreshold=3145728"
 #HEAP_OPTS="-Xmx5120m -Xms2048m" #-XX:NewSize=1524m" # -d64 for 64-bit awesomeness
 #HEAP_OPTS="-Xmx1g -Xms1g -XX:NewSize=256m"
 # HEAP_OPTS="-Xmx1024m -Xms512m -XX:NewSize=128m"
 # HEAP_OPTS="-Xmx512m -Xms256m -XX:NewSize=64m"
-GC_OPTS="-verbosegc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintGCDateStamps -Xloggc:$logs/gc.log -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:+UseCMSCompactAtFullCollection -XX:CMSFullGCsBeforeCompaction=1"
+GC_OPTS="-verbosegc -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintGCDateStamps -Xloggc:$logs/gc.log -XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:+UseCMSCompactAtFullCollection -XX:CMSFullGCsBeforeCompaction=0 -XX:CMSInitiatingOccupancyFraction=70 -XX:+UseCMSInitiatingOccupancyOnly"
 #JAVA_DEBUG="-Xdebug -Xrunjdwp:transport=dt_socket,address=1044,server=y,suspend=n"
 # GC_OPTS="-XX:+UseConcMarkSweepGC -XX:+UseParNewGC -XX:-UseGCOverheadLimit"
 JAVA_OPTS="-server -d64"
