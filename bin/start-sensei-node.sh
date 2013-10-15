@@ -66,7 +66,7 @@ if [ -f $PIDFILE ]; then
   echo "Make sure the node is shutdown and the file" $PIDFILE "is removed before stating the node"
  else
   
-   java $JAVA_OPTS $JMX_OPTS $HEAP_OPTS $GC_OPTS $JAVA_DEBUG -classpath $CLASSPATH  -Dlog.home=$logs $MAIN_CLASS $1  &
+  numactl –interleave=all java $JAVA_OPTS $JMX_OPTS $HEAP_OPTS $GC_OPTS $JAVA_DEBUG -classpath $CLASSPATH  -Dlog.home=$logs $MAIN_CLASS $1  &
   echo $! > ${PIDFILE}
   echo "Sensei node started successfully! Logs are at $logs"
  fi
