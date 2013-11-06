@@ -17,6 +17,8 @@ import org.apache.lucene.search.Query;
 import proj.zoie.api.ZoieIndexReader;
 import proj.zoie.api.ZoieIndexReader.SubReaderAccessor;
 import proj.zoie.api.ZoieIndexReader.SubReaderInfo;
+import zu.finagle.serialize.JOSSSerializer;
+import zu.finagle.serialize.ZuSerializer;
 
 import com.browseengine.bobo.api.BoboBrowser;
 import com.browseengine.bobo.api.BoboIndexReader;
@@ -26,8 +28,6 @@ import com.browseengine.bobo.api.BrowseRequest;
 import com.browseengine.bobo.api.BrowseResult;
 import com.browseengine.bobo.api.MultiBoboBrowser;
 import com.browseengine.bobo.sort.SortCollector;
-import com.linkedin.norbert.network.JavaSerializer;
-import com.linkedin.norbert.network.Serializer;
 import com.sensei.search.req.protobuf.SenseiReqProtoSerializer;
 import com.senseidb.indexing.SenseiIndexPruner;
 import com.senseidb.indexing.SenseiIndexPruner.IndexReaderSelector;
@@ -45,12 +45,10 @@ import com.yammer.metrics.core.MetricName;
 import com.yammer.metrics.core.Timer;
 
 public class CoreSenseiServiceImpl extends AbstractSenseiCoreService<SenseiRequest, SenseiResult> {
-	public static final Serializer<SenseiRequest, SenseiResult> JAVA_SERIALIZER =
-			JavaSerializer.apply("SenseiRequest", SenseiRequest.class, SenseiResult.class);
 
-	public static final Serializer<SenseiRequest, SenseiResult> PROTO_SERIALIZER =
-			new SenseiReqProtoSerializer();
-
+	public static final ZuSerializer<SenseiRequest, SenseiResult> JAVA_SERIALIZER = new JOSSSerializer<SenseiRequest, SenseiResult>();
+	public static final String MESSAGE_TYPE_NAME = "SenseiRequest";
+	
 	private static final Logger logger = Logger.getLogger(CoreSenseiServiceImpl.class);
 	
 	private static Timer timerMetric = null;
@@ -64,8 +62,13 @@ public class CoreSenseiServiceImpl extends AbstractSenseiCoreService<SenseiReque
 				logger.error(e.getMessage(),e);
 		  }
 	}
+	 
+   
+   
+	
 	public CoreSenseiServiceImpl(SenseiCore core) {
 		super(core);
+		
 	}
 	
 	private SenseiResult browse(SenseiRequest senseiRequest, MultiBoboBrowser browser, BrowseRequest req, SubReaderAccessor<BoboIndexReader> subReaderAccessor) throws BrowseException
@@ -278,7 +281,12 @@ public class CoreSenseiServiceImpl extends AbstractSenseiCoreService<SenseiReque
 	}
 
 	@Override
-	public Serializer<SenseiRequest, SenseiResult> getSerializer() {
-		 return PROTO_SERIALIZER;
+	public String getMessageTypeName() {
+		return MESSAGE_TYPE_NAME;
+	}
+	
+	@Override
+	public ZuSerializer<SenseiRequest, SenseiResult>  getSerializer() {
+		 return JAVA_SERIALIZER;
 	}
 }

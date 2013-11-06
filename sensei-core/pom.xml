@@ -242,9 +242,15 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.linkedin</groupId>
-			<artifactId>norbert_2.8.1</artifactId>
-			<version>0.6.16-SNAPSHOT</version>
+			<groupId>com.senseidb.zu</groupId>
+			<artifactId>zu-core</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.senseidb.zu</groupId>
+			<artifactId>zu-finagle</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
@@ -280,37 +286,42 @@
 			</exclusions>
 		</dependency>
 
-          <dependency>
-            <groupId>org.antlr</groupId>
-            <artifactId>antlr</artifactId>
-            <version>3.4</version>
-            <type>jar</type>
-            <scope>compile</scope>
-          </dependency>
-                
-  	<dependency>
-		<groupId>org.javassist</groupId>
-		<artifactId>javassist</artifactId>
-		<version>3.16.1-GA</version>
-	</dependency>
-	<dependency>
-		<groupId>org.easymock</groupId>
-		<artifactId>easymock</artifactId>
-		<version>2.5.1</version>
-		 <scope>test</scope>
-	</dependency>
-	<dependency>
-		<groupId>org.easymock</groupId>
-		<artifactId>easymockclassextension</artifactId>
-		<version>2.5.1</version>
-		<scope>test</scope>
-	</dependency>
-	<dependency>
-		<groupId>com.github.sgroschupf</groupId>
-		<artifactId>zkclient</artifactId>
-		<version>0.1</version>
-	</dependency>
-	    
+		<dependency>
+			<groupId>org.antlr</groupId>
+			<artifactId>antlr</artifactId>
+			<version>3.4</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.javassist</groupId>
+			<artifactId>javassist</artifactId>
+			<version>3.16.1-GA</version>
+		</dependency>
+		<dependency>
+			<groupId>org.easymock</groupId>
+			<artifactId>easymock</artifactId>
+			<version>2.5.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.easymock</groupId>
+			<artifactId>easymockclassextension</artifactId>
+			<version>2.5.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.github.sgroschupf</groupId>
+			<artifactId>zkclient</artifactId>
+			<version>0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.twitter.common</groupId>
+			<artifactId>zookeeper-testing</artifactId>
+			<version>0.0.30</version>
+			<scope>test</scope>
+		</dependency>
 		<dependency>
 			<groupId>com.linkedin.kamikaze</groupId>
 			<artifactId>kamikaze</artifactId>

@@ -1,8 +1,6 @@
-package com.senseidb.util;
+package com.senseidb.test.util;
 
 import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.mortbay.jetty.Server;
@@ -14,26 +12,24 @@ import com.senseidb.search.node.SenseiServer;
 import com.senseidb.search.node.broker.BrokerConfig;
 import com.senseidb.search.req.SenseiRequest;
 import com.senseidb.search.req.SenseiResult;
-import com.senseidb.svc.api.SenseiException;
+import com.senseidb.test.SenseiStarter;
 
-public class SingleNodeStarter {
-  private static boolean serverStarted = false;
-  private static Server jettyServer;
-  private static SenseiServer server;
-  private static SenseiBroker senseiBroker;
-	private static BrokerConfig brokerConfig;
+public class OverridenNodeStarter {
+  private  boolean serverStarted = false;
+  private  Server jettyServer;
+  private  SenseiServer server;
+  private  SenseiBroker senseiBroker;
+  private  BrokerConfig brokerConfig;
+  private PropertiesConfiguration senseiConfiguration;
 
-  public static void start(String localPath, int expectedDocs) {
-    start(new File(getUri(localPath)), expectedDocs);
-  }
-
-  public static void start(File confDir, int expectedDocs) {
+ 
+  public  void start(PropertiesConfiguration senseiConfiguration) {
+    this.senseiConfiguration = senseiConfiguration;
     if (!serverStarted) {
       try {
-        PropertiesConfiguration senseiConfiguration = new PropertiesConfiguration(new File(confDir, "sensei.properties"));
         final String indexDir = senseiConfiguration.getString(SenseiConfParams.SENSEI_INDEX_DIR);
        // rmrf(new File(indexDir));
-        SenseiServerBuilder senseiServerBuilder = new SenseiServerBuilder(confDir, null);
+        SenseiServerBuilder senseiServerBuilder = new SenseiServerBuilder(senseiConfiguration);
         server = senseiServerBuilder.buildServer();
         jettyServer = senseiServerBuilder.buildHttpRestServer();
         server.start(true);
@@ -41,27 +37,30 @@ public class SingleNodeStarter {
         Runtime.getRuntime().addShutdownHook(new Thread() {
           @Override
           public void run() {
-            shutdown();
+            if (serverStarted) {
+              shutdown();
+            }
           }
         });
-        brokerConfig = new BrokerConfig(senseiConfiguration);
-        brokerConfig.init(null);
+     
+         brokerConfig = new BrokerConfig(senseiConfiguration);
+        brokerConfig.init(SenseiStarter.createZuCluster());
          senseiBroker = brokerConfig.buildSenseiBroker();
-        waitTillServerStarts(expectedDocs);
+       
       } catch (Exception ex) {
         throw new RuntimeException(ex);
       }
     }
   }
 
-  public static void waitTillServerStarts(int expectedDocs) throws SenseiException, InterruptedException {
+  public  void waitTillServerStarts(int expectedDocs) throws Exception {
     int counter = 0;
     while (true) {
       SenseiResult senseiResult = senseiBroker.browse(new SenseiRequest());
       if (senseiBroker.isDisconnected()) {
         brokerConfig.shutdown();
         Thread.sleep(5000);
-        brokerConfig.init(null);
+        brokerConfig.init(SenseiStarter.createZuCluster());
         senseiBroker = brokerConfig.buildSenseiBroker();
         System.out.println("Restarted the broker");
       }
@@ -91,36 +90,30 @@ public class SingleNodeStarter {
     return f.delete();
   }
  
-  public static boolean isServerStarted() {
+  public  boolean isServerStarted() {
     return serverStarted;
   }
-
-  private static URI getUri(String localPath) {
+ 
+  public  void shutdown() {
+    senseiBroker = null;
     try {
-      return SingleNodeStarter.class.getClassLoader().getResource(localPath).toURI();
-    } catch (URISyntaxException ex) {
-      throw new RuntimeException(ex);
+      server.setAvailable(false);
+      server.shutdown();
+    } catch (Exception e) {
+      e.printStackTrace();
+    } finally {
+      try {
+        serverStarted = false;
+        jettyServer.stop();
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     }
   }
-  
-	public static void shutdown() {
-		try {
-			jettyServer.stop();
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			server.shutdown();
-			serverStarted = false;
-			try {
-				senseiBroker.shutdown();
-			} finally {
-				senseiBroker = null;
-				try {
-					brokerConfig.shutdown();
-				} finally {
-					brokerConfig = null;
-				}
-			}
-		}
-	}
+  public SenseiBroker getSenseiBroker() {
+    return senseiBroker;
+  }
+  public PropertiesConfiguration getSenseiConfiguration() {
+    return senseiConfiguration;
+  }
 }
