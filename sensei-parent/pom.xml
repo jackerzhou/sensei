@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.senseidb</groupId>
+	<groupId>com.xueqiu</groupId>
 	<artifactId>sensei-parent</artifactId>
 	<packaging>pom</packaging>
 	<name>sensei parent</name>
-	<version>1.6.1-RC</version>
+	<version>1.6.1.1</version>
 	<description>sensei search</description>
 	<url>http://www.senseidb.com/</url>
 
@@ -156,7 +156,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<sensei.version>1.6.1-SNAPSHOT</sensei.version>
+		<sensei.version>1.6.1.1</sensei.version>
 	</properties>
 
 	<dependencies>

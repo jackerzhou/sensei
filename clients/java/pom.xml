@@ -3,9 +3,9 @@
 
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.senseidb</groupId>
+		<groupId>com.xueqiu</groupId>
 		<artifactId>sensei-parent</artifactId>
-		<version>1.6.1-RC</version>
+		<version>1.6.1.1</version>
 		<relativePath>../../sensei-parent/pom.xml</relativePath>
 	</parent>
 
