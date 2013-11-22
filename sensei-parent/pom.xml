@@ -197,10 +197,12 @@
 			<name>Releases</name>
 			<url>https://oss.sonatype.org/content/repositories/releases</url>
 		</repository>
+        <!--
 		<repository>
 			<id>twitter</id>
 			<url>http://maven.twttr.com</url>
 		</repository>
+		-->
 	</repositories>
 
 	<distributionManagement>
