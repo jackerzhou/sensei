@@ -62,7 +62,8 @@ public class QueryJsonHandler implements JsonHandler<Query> {
         SpanTerm spanTerm = (SpanTerm) bean;
         defaultSerialization = new JSONObject().put(spanTerm.getField(), spanTerm.getValue());
       } else {
-        defaultSerialization = new JSONObject().put(((FieldAwareQuery) bean).getField(), defaultSerialization);
+        defaultSerialization = new JSONObject().put(((FieldAwareQuery) bean).getField(),
+          defaultSerialization);
       }
       if(relevance != null){
           defaultSerialization.put("relevance", relevance);
@@ -70,7 +71,8 @@ public class QueryJsonHandler implements JsonHandler<Query> {
     }
     if (bean instanceof Selection) {
       defaultSerialization.remove("field");
-      defaultSerialization = new JSONObject().put(((Selection) bean).getField(), defaultSerialization);
+      defaultSerialization = new JSONObject().put(((Selection) bean).getField(),
+        defaultSerialization);
     }
     if (bean.getRelevance() != null) {
       defaultSerialization.remove("relevance");
