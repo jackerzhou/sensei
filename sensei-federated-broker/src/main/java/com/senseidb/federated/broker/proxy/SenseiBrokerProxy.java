@@ -10,10 +10,8 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
 
-import com.linkedin.norbert.javacompat.cluster.ClusterClient;
-import com.linkedin.norbert.javacompat.network.PartitionedLoadBalancerFactory;
-import com.linkedin.norbert.javacompat.network.PartitionedNetworkClient;
-import com.senseidb.cluster.routing.SenseiPartitionedLoadBalancerFactory;
+import zu.core.cluster.ZuCluster;
+
 import com.senseidb.metrics.MetricsConstants;
 import com.senseidb.search.node.AbstractConsistentHashBroker;
 import com.senseidb.search.node.SenseiBroker;
@@ -28,7 +26,6 @@ import com.yammer.metrics.core.Timer;
 
 public class SenseiBrokerProxy extends SenseiBroker implements BrokerProxy {
   private final static Logger logger = Logger.getLogger(SenseiBrokerProxy.class);
-  private static PartitionedLoadBalancerFactory balancerFactory = new SenseiPartitionedLoadBalancerFactory(50);  
   private static Timer scatterTimer = null; 
   private static Meter ErrorMeter = null;
   static{
@@ -44,13 +41,14 @@ public class SenseiBrokerProxy extends SenseiBroker implements BrokerProxy {
     }
   }
   
-  public SenseiBrokerProxy(PartitionedNetworkClient<String> networkClient, ClusterClient clusterClient, boolean allowPartialMerge) {
-    super(networkClient, clusterClient, allowPartialMerge);
+  public SenseiBrokerProxy(ZuCluster clusterClient, boolean allowPartialMerge) {
+    super(clusterClient, allowPartialMerge);
   }
-  public static SenseiBrokerProxy valueOf(Configuration senseiConfiguration, Map<String, String> overrideProperties) {
-    BrokerProxyConfig brokerProxyConfig = new BrokerProxyConfig(senseiConfiguration, balancerFactory, overrideProperties);
-    brokerProxyConfig.init();
-    SenseiBrokerProxy ret = new SenseiBrokerProxy(brokerProxyConfig.getNetworkClient(), brokerProxyConfig.getClusterClient(), true);
+  
+  public static SenseiBrokerProxy valueOf(Configuration senseiConfiguration, Map<String, String> overrideProperties, ZuCluster senseiCluster) {
+    BrokerProxyConfig brokerProxyConfig = new BrokerProxyConfig(senseiConfiguration, overrideProperties);
+    brokerProxyConfig.init(senseiCluster);
+    SenseiBrokerProxy ret = new SenseiBrokerProxy(senseiCluster, true);
     return ret;
   }
   @Override

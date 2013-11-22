@@ -3,9 +3,9 @@
 	
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.senseidb</groupId>
+		<groupId>com.xueqiu</groupId>
 		<artifactId>sensei-parent</artifactId>
-		<version>1.6.1-RC</version>
+		<version>1.6.1.1</version>
 		<relativePath>../sensei-parent/pom.xml</relativePath>
 	</parent>
 	
@@ -122,9 +122,9 @@
 		<dependency>
 			<groupId>org.apache.kafka</groupId>
 			<artifactId>kafka</artifactId>
-			<version>0.7.6</version>
+			<version>0.7.0</version>
 			 <scope>system</scope>
-			<systemPath>${basedir}/../lib/kafka-0.7.6.jar</systemPath>
+			<systemPath>${basedir}/../lib/kafka-0.7.0.jar</systemPath>
       <!-- exclusions>
         <exclusion> 
           <groupId>zkclient</groupId>
@@ -156,7 +156,12 @@
 	        <version>10.8.2.2</version>
 	        <scope>test</scope>
         </dependency>
-        
+		<dependency>
+		    <groupId>com.twitter.common</groupId>
+		    <artifactId>zookeeper-testing</artifactId>
+		    <version>0.0.30</version>
+		    <scope>test</scope>
+		</dependency>
         <dependency>
 			<groupId>com.rabbitmq</groupId>
 			<artifactId>amqp-client</artifactId>
