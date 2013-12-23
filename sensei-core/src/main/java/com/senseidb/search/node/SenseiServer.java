@@ -52,6 +52,8 @@ public class SenseiServer {
   private final ZuFinagleServer server;
   private final ZuCluster cluster;
 
+  public static String CONFIG_DIR;
+
   public SenseiServer(int port, SenseiCore senseiCore,
       List<AbstractSenseiCoreService<AbstractSenseiRequest, AbstractSenseiResult>> externalSvc,
       SenseiPluginRegistry pluginRegistry, ZuTransportService transport, ZuFinagleServer server,
@@ -225,6 +227,7 @@ public class SenseiServer {
       System.out.println(help());
       System.exit(1);
     }
+    CONFIG_DIR  = args[0];
 
     File confDir = null;
 
