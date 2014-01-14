@@ -7,11 +7,10 @@ import org.apache.lucene.search.Filter;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class CustomFilterConstructor extends FilterConstructor
-{
+public class CustomFilterConstructor extends FilterConstructor {
 
   public static final String FILTER_TYPE = "custom";
-
+  
   public static final String PARAM_TYPE_INT = "int";
   public static final String PARAM_TYPE_STRING = "string";
   public static final String PARAM_TYPE_BOOLEAN = "boolean";
@@ -28,10 +27,8 @@ public class CustomFilterConstructor extends FilterConstructor
 //  }
   
   @Override
-  protected Filter doConstructFilter(Object json) throws Exception
-  {
-    try
-    {
+  protected Filter doConstructFilter(Object json) throws Exception {
+    try {
       JSONObject jsonObject = (JSONObject) json; 
       String className = jsonObject.getString(CLASS_PARAM);
       
@@ -64,15 +61,12 @@ public class CustomFilterConstructor extends FilterConstructor
     	  }
       }
       
-      Class filterClass = Class.forName(className);
+      Class<?> filterClass = Class.forName(className);
       Constructor constructor = filterClass.getConstructor(params);
       Filter f = (Filter)constructor.newInstance(values);
-      
-      //Filter f = (Filter)filterClass.newInstance();
+
       return f;
-    }
-    catch(Throwable t)
-    {
+    } catch (Throwable t) {
       throw new IllegalArgumentException(t.getMessage());
     }
   }

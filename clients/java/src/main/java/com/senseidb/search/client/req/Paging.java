@@ -6,11 +6,11 @@ package com.senseidb.search.client.req;
     - the number of search results to return
       the starting offset of search results
  */
+@SuppressWarnings("unused")
 public class Paging {
-    /**
-     * the number of search results to return
-
-     */
+  /**
+   * the number of search results to return
+   */
     private int size;
     /**
      * the starting offset of search results
