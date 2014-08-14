@@ -614,6 +614,7 @@ public class SenseiServerBuilder implements SenseiConfParams {
 
     int nodeid = _senseiConf.getInt(NODE_ID);
     String nodeip = _senseiConf.getString(NODE_IP);
+    int backLog = _senseiConf.getInt(SERVER_BACKLOG, 0);
     ZuTransportService transportService = new ZuTransportService();
     int serverPort = _senseiConf.getInt(SERVER_PORT);
 
@@ -627,6 +628,7 @@ public class SenseiServerBuilder implements SenseiConfParams {
     }
     ZuFinagleServer server = new ZuFinagleServer("sensei-finagle-server-" + nodeid,
         new InetSocketAddress(hostAddress, serverPort), transportService.getService());
+    server.setBackLog(backLog);
 
     SenseiCore core = buildCore(hostAddress);
 
