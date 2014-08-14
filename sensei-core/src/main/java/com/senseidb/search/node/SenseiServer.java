@@ -40,6 +40,7 @@ public class SenseiServer {
   private static final String UNAVAILABLE = "unavailable";
   private final int _id;
   private final int _port;
+  private final String _ip;
   private final int[] _partitions;
   private final SenseiCore _core;
   private final List<AbstractSenseiCoreService<AbstractSenseiRequest, AbstractSenseiResult>> _externalSvc;
@@ -54,7 +55,7 @@ public class SenseiServer {
 
   public static String CONFIG_DIR;
 
-  public SenseiServer(int port, SenseiCore senseiCore,
+  public SenseiServer(String ip, int port, SenseiCore senseiCore,
       List<AbstractSenseiCoreService<AbstractSenseiRequest, AbstractSenseiResult>> externalSvc,
       SenseiPluginRegistry pluginRegistry, ZuTransportService transport, ZuFinagleServer server,
       ZuCluster cluster) {
@@ -64,6 +65,7 @@ public class SenseiServer {
     this.server = server;
     this.cluster = cluster;
     _id = senseiCore.getNodeId();
+    _ip = ip;
     _port = port;
     _partitions = senseiCore.getPartitions();
 
@@ -149,7 +151,7 @@ public class SenseiServer {
   }
 
   private String getLocalIpAddress() throws SocketException, UnknownHostException {
-    String addr = NetUtil.getHostAddress();
+    String addr = _ip;//NetUtil.getHostAddress();
     return String.format("%s:%d", addr, _port);
   }
 

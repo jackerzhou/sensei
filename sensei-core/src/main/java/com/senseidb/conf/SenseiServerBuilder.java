@@ -27,6 +27,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.MapConfiguration;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -366,7 +367,7 @@ public class SenseiServerBuilder implements SenseiConfParams {
   }
 
   @SuppressWarnings({ "rawtypes", "unchecked" })
-  public SenseiCore buildCore() throws ConfigurationException {
+  public SenseiCore buildCore(String hostAddress) throws ConfigurationException {
     SenseiUncaughtExceptionHandler.setAsDefaultForAllThreads();
     int nodeid = _senseiConf.getInt(NODE_ID);
     String partStr = _senseiConf.getString(PARTITIONS);
@@ -438,9 +439,9 @@ public class SenseiServerBuilder implements SenseiConfParams {
 
       try {
         List<SenseiSystemInfo.SenseiNodeInfo> clusterInfo = new ArrayList(1);
-        String addr = NetUtil.getHostAddress();
+        // String addr = NetUtil.getHostAddress();
         clusterInfo.add(new SenseiSystemInfo.SenseiNodeInfo(nodeid, partitions, String.format(
-          "%s:%d", addr, _senseiConf.getInt(SERVER_PORT)), String.format("http://%s:%d", addr,
+          "%s:%d", hostAddress, _senseiConf.getInt(SERVER_PORT)), String.format("http://%s:%d", hostAddress,
           _senseiConf.getInt(SERVER_BROKER_PORT))));
         sysInfo.setClusterInfo(clusterInfo);
       } catch (Exception e) {
@@ -612,23 +613,29 @@ public class SenseiServerBuilder implements SenseiConfParams {
     ZuCluster cluster = buildClusterClient();
 
     int nodeid = _senseiConf.getInt(NODE_ID);
+    String nodeip = _senseiConf.getString(NODE_IP);
+    int backLog = _senseiConf.getInt(SERVER_BACKLOG, 0);
     ZuTransportService transportService = new ZuTransportService();
     int serverPort = _senseiConf.getInt(SERVER_PORT);
-    String hostAddress;
-    try {
-      hostAddress = NetUtil.getHostAddress();
-    } catch (Exception e) {
-      throw new ConfigurationException(e.getMessage(), e);
+
+    String hostAddress = nodeip;
+    if(StringUtils.isBlank(hostAddress)) {
+        try {
+          hostAddress = NetUtil.getHostAddress();
+        } catch (Exception e) {
+          throw new ConfigurationException(e.getMessage(), e);
+        }
     }
     ZuFinagleServer server = new ZuFinagleServer("sensei-finagle-server-" + nodeid,
         new InetSocketAddress(hostAddress, serverPort), transportService.getService());
+    server.setBackLog(backLog);
 
-    SenseiCore core = buildCore();
+    SenseiCore core = buildCore(hostAddress);
 
     List<AbstractSenseiCoreService<AbstractSenseiRequest, AbstractSenseiResult>> svcList = (List) pluginRegistry
         .resolveBeansByListKey(SENSEI_PLUGIN_SVCS, AbstractSenseiCoreService.class);
 
-    return new SenseiServer(serverPort, core, svcList, pluginRegistry, transportService, server,
+    return new SenseiServer(hostAddress, serverPort, core, svcList, pluginRegistry, transportService, server,
         cluster);
   }
 
