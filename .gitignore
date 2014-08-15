@@ -31,3 +31,5 @@ sensei-war/src/main/resources/
 *.ipr
 *.iws
 sensei-ba/src/test/resources/data/index/*
+.idea
+
