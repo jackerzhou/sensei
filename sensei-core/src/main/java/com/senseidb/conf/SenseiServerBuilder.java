@@ -164,6 +164,7 @@ public class SenseiServerBuilder implements SenseiConfParams {
     logger.info("request threadpool started.");
     SelectChannelConnector connector = new SelectChannelConnector();
     connector.setPort(port);
+    connector.setAcceptQueueSize(_senseiConf.getInt(SERVER_BACKLOG, 0));
     server.addConnector(connector);
 
     DefaultSenseiJSONServlet senseiServlet = new DefaultSenseiJSONServlet();
